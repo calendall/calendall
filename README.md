@@ -1,0 +1,4 @@
+calendall
+=========
+
+Calendall main application
