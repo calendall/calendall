@@ -11,3 +11,8 @@ dependencies:
 test:
   override:
     - calendall/manage.py test
+
+notify:
+  webhooks:
+    # gitter hook
+    - url: https://webhooks.gitter.im/e/d1551ac66b76a70ba753
