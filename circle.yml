@@ -6,6 +6,6 @@ dependencies:
   override:
     - pip install-r requiremens/dev.txt
 
-tests:
+test:
   override:
     - calendall/manage.py test
