@@ -1,4 +1,6 @@
 machine:
+  timezone:
+    Europe/Madrid
   python:
     version: 3.4.2
 
