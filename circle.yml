@@ -1,0 +1,11 @@
+machine:
+  python:
+    version: 3.4.2
+
+dependencies:
+  override:
+    - pip install-r requiremens/dev.txt
+
+tests:
+  override:
+    - calendall/manage.py test
