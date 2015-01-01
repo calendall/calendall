@@ -18,7 +18,7 @@ web:
   command: python manage.py runserver 0.0.0.0:8000
   environment:
     CALENDALL_ENV: dev
-    PYTHONUNBUFFERED: 1 # Fix log issue for manage.py
+    #PYTHONUNBUFFERED: 1 # Fix log issue for manage.py (if not present in the docker container)
   volumes:
     - .:/code
   ports:
