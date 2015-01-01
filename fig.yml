@@ -1,0 +1,27 @@
+# Data only container to persist data
+dbdata:
+  image: busybox
+  volumes:
+    - /data
+  command: true
+
+# Postgresql container
+db:
+  image: slok/postgresql:1.0
+  volumes_from:
+    - dbdata
+
+# Main calendall application
+web:
+  image: slok/calendall:dev
+  working_dir: /code/calendall
+  command: python manage.py runserver 0.0.0.0:8000
+  environment:
+    CALENDALL_ENV: dev
+    PYTHONUNBUFFERED: 1 # Fix log issue for manage.py
+  volumes:
+    - .:/code
+  ports:
+    - "8000:8000"
+  links:
+    - db:postgresql
