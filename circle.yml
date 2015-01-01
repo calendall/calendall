@@ -3,8 +3,14 @@ machine:
     Europe/Madrid
   python:
     version: 3.4.2
+  services:
+    - postgresql # is 9.3, should be 9.4
+  environment:
+    DJANGO_SETTINGS_MODULE: calendall.settings.ci
 
 dependencies:
+  pre:
+    - sudo apt-get update; sudo apt-get install libpq5 libpq-dev
   override:
     - pip install -r requirements/dev.txt
 
