@@ -27,11 +27,55 @@ These are the images:
 
 To glue all this stuff we will use [Fig](http://www.fig.sh/)
 
+### First run
+
+To create the users first we need to run the postgres database, so we will use fig:
+
+    $ fig up -d
+
+Web app will fail, no worries :)
+
+Enter in the database:
+
+    $ docker run --rm -it --link calendall_db_1:db slok/postgresql:1.0 /bin/bash
+
+Once inside the container, connect to the database (default container user/pass is docker/docker):
+
+    # psql -h $DB_PORT_5432_TCP_ADDR -U docker
+
+And Create the database and user for the app:
+
+    # CREATE USER calendall WITH PASSWORD 'calendall';
+    # CREATE DATABASE calendall WITH OWNER calendall ENCODING 'UTF8';
+    # GRANT ALL PRIVILEGES ON DATABASE "calendall" to calendall;
+    # \q
+
+We close the connection and we'll run the migrations:
+
+    $ fig run web ./manage.py migrate
+
+Stop the containers:
+
+    $ fig stop
+
+Done!
+
+Note: If you remove the `dbdata` container, you have to do this again
+
+### After the first run
+
 Just run:
 
     $ fig up -d
 
 Done! go to `127.0.0.1:8000`
+
+If you want to gain control of the web app prompt (close and reload django dev server...):
+
+    $ fig stop web
+    $ fig run web
+
+### Extra
 
 As an extra stuff, you can rerun the app container to migrate database and stuff
 like that.

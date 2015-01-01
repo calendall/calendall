@@ -1,3 +1,5 @@
+import os
+
 from .base import *
 
 
@@ -8,8 +10,15 @@ TEMPLATE_DEBUG = False
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'calendall',
+        'USER': 'calendall',
+        'PASSWORD': 'calendall',
+        # This settings are related with Docker, postgresql is a host
+        # (see fig.yml) that points to the postgresql container, we could use
+        # os.getenv('POSTGRESQL_PORT_5432_TCP_ADDR', 'localhost'),
+        'HOST': 'postgresql',
+        'PORT': os.getenv('POSTGRESQL_PORT_5432_TCP_PORT', '5432'),
     }
 }
 
