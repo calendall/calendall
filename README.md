@@ -46,6 +46,7 @@ Once inside the container, connect to the database (default container user/pass 
 And Create the database and user for the app:
 
     # CREATE USER calendall WITH PASSWORD 'calendall';
+    # ALTER USER calendall CREATEDB;
     # CREATE DATABASE calendall WITH OWNER calendall ENCODING 'UTF8';
     # GRANT ALL PRIVILEGES ON DATABASE "calendall" to calendall;
     # \q
