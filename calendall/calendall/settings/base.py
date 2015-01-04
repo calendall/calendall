@@ -42,6 +42,7 @@ THIRD_PARTY_APPS = (
 )
 
 LOCAL_APPS = (
+    'profiles',
 )
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -84,3 +85,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+AUTH_USER_MODEL = 'profiles.CalendallUser'
