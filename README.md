@@ -35,23 +35,11 @@ To create the users first we need to run the postgres database, so we will use f
 
 Web app will fail, no worries :)
 
-Enter in the database:
+Execute the script to prepare de db with the user and password for the calendall DB:
 
-    $ docker run --rm -it --link calendall_db_1:db slok/postgresql:1.0 /bin/bash
+    $ ./prepare_db.sh
 
-Once inside the container, connect to the database (default container user/pass is docker/docker):
-
-    # psql -h $DB_PORT_5432_TCP_ADDR -U docker
-
-And Create the database and user for the app:
-
-    # CREATE USER calendall WITH PASSWORD 'calendall';
-    # ALTER USER calendall CREATEDB;
-    # CREATE DATABASE calendall WITH OWNER calendall ENCODING 'UTF8';
-    # GRANT ALL PRIVILEGES ON DATABASE "calendall" to calendall;
-    # \q
-
-We close the connection and we'll run the migrations:
+Now apply migrations:
 
     $ fig run web ./manage.py migrate
 
