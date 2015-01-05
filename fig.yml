@@ -15,7 +15,8 @@ db:
 web:
   image: slok/calendall:dev
   working_dir: /code/calendall
-  command: python manage.py runserver 0.0.0.0:8000
+  #command: python manage.py runserver 0.0.0.0:8000
+  command: true # I prefer to control the runserver command while development
   environment:
     CALENDALL_ENV: dev
     #PYTHONUNBUFFERED: 1 # Fix log issue for manage.py (if not present in the docker container)

@@ -57,33 +57,11 @@ Just run:
 
     $ fig up -d
 
+
+To gain control of the web app prompt (close and reload django dev server...)
+the web service is stopped by default, you ned to run django webserver by hand,
+this is handy for development, so.. just do:
+
+    $ fig run web ./manage.py runserver 0.0.0.0:8000
+
 Done! go to `127.0.0.1:8000`
-
-If you want to gain control of the web app prompt (close and reload django dev server...):
-
-    $ fig stop web
-    $ fig run web
-
-### Extra
-
-As an extra stuff, you can rerun the app container to migrate database and stuff
-like that.
-
-Imagine that our app is running after doing `fig up -d`:
-
-    $ fig ps
-           Name                     Command               State            Ports
-    -------------------------------------------------------------------------------------
-    calendall_db_1       run                              Up       5432/tcp
-    calendall_dbdata_1   true                             Exit 0
-    calendall_web_1      python /code/calendall/man ...   Up       0.0.0.0:8000->8000/tcp
-
-stop the `web` (calendall_web_1) container and run the migration:
-
-    $ fig kill web
-    $ fig run web calendall/manage.py migrate
-
-And re run
-
-    $ fig run web
-
