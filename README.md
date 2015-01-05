@@ -62,6 +62,14 @@ To gain control of the web app prompt (close and reload django dev server...)
 the web service is stopped by default, you ned to run django webserver by hand,
 this is handy for development, so.. just do:
 
-    $ fig run web ./manage.py runserver 0.0.0.0:8000
+    $ fig run --service-ports web ./manage.py runserver 0.0.0.0:8000
 
 Done! go to `127.0.0.1:8000`
+
+####Note
+
+> You need --service-ports implemented in fig, was added in [485 issue](https://github.com/docker/fig/pull/485)
+> so, if the fig version you are using is < 1.1.0 you will need to install from
+> the git repository
+
+    pip install git+https://github.com/docker/fig.git
