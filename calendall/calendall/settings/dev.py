@@ -22,7 +22,9 @@ DATABASES = {
     }
 }
 
+
 DEV_APPS = (
+    'debug_toolbar',
 )
 
 DEV_MIDDLEWARE = (
@@ -30,3 +32,15 @@ DEV_MIDDLEWARE = (
 
 INSTALLED_APPS += DEV_APPS
 MIDDLEWARE_CLASSES = DEV_MIDDLEWARE + MIDDLEWARE_CLASSES
+
+
+# In Docker the IP changes, Accept always except ajax, with thi method we don't
+# have to set INTERNAL_IPS
+def show_toolbar(request):
+    if request.is_ajax():
+        return False
+    return True
+
+DEBUG_TOOLBAR_CONFIG = {
+    'SHOW_TOOLBAR_CALLBACK': 'calendall.settings.dev.show_toolbar',
+}
