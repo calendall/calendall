@@ -3,7 +3,6 @@ from datetime import timedelta
 
 from django.utils import timezone
 from django.test import TestCase
-from django.contrib.auth.hashers import make_password
 
 from .models import CalendallUser
 
