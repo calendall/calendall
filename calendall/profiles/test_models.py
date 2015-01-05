@@ -64,8 +64,9 @@ class CalendallUserTaskTestCase(TestCase):
             self.assertEqual(v.first_name,
                              data[k].get('first_name',
                                          self.data[k]['first_name']))
-            self.assertEqual(v.last_name, data[k].get('last_name',
-                                                      self.data[k]['last_name']))
+            self.assertEqual(v.last_name,
+                             data[k].get('last_name',
+                                         self.data[k]['last_name']))
             self.assertEqual(v.email, data[k].get('email',
                                                   self.data[k]['email']))
             self.assertEqual(v.timezone, data[k].get('timezone',
