@@ -10,7 +10,7 @@ from .models import CalendallUser
 
 # Simple tests, this shouldn't be neccessary, the ORM is already tested
 # by Django :P
-class CalendallUserTaskTestCase(TestCase):
+class CalendallUserTestCase(TestCase):
 
     def setUp(self):
         self.data = [
