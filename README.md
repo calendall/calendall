@@ -1,9 +1,27 @@
 calendall
 =========
 
+Calendall is the next generation public calendar repository. You will be able
+to explore, rate, export, import and share public calendars.
+
+Callendall always will be open source.
+
+Also this project is made with full stack development, this means:
+
+    * Issues with kanban
+    * Unit tests
+    * Continous integration
+    * Full automation
+    * Different environments
+
+So could be used as a project to learn from.
+
+Status
+======
+
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/calendall/calendall?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-[![CircleCI](https://circleci.com/gh/calendall/calendall.png?circle-token=:circle-token)](https://circleci.com/gh/calendall/calendall)
+[![CircleCI](https://circleci.com/gh/calendall/calendall.png?style=shield&circle-token=:circle-token)](https://circleci.com/gh/calendall/calendall)
 
 [![Coverage Status](https://img.shields.io/coveralls/calendall/calendall.svg)](https://coveralls.io/r/calendall/calendall?branch=master)
 
@@ -77,3 +95,8 @@ Done! go to `127.0.0.1:8000`
 > the git repository
 
     pip install git+https://github.com/docker/fig.git
+
+License
+=======
+
+See [LICENSE](https://github.com/calendall/calendall/blob/master/LICENSE)
