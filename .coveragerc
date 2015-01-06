@@ -1,0 +1,22 @@
+# .coveragerc to control coverage.py
+[run]
+branch = True
+omit =
+    */migrations/*
+    core/views.py
+    #core/__init__.py
+    #profiles/__init__.py
+
+source =
+    core
+    profiles
+
+[report]
+# Regexes for lines to exclude from consideration
+exclude_lines =
+
+    def __repr__
+    def __str__
+
+    if 0:
+    if __name__ == .__main__.:
