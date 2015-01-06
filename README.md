@@ -84,9 +84,14 @@ To gain control of the web app prompt (close and reload django dev server...)
 the web service is stopped by default, you ned to run django webserver by hand,
 this is handy for development, so.. just do:
 
-    $ fig run --service-ports web ./manage.py runserver 0.0.0.0:8000
+    $ fig run --rm --service-ports web ./manage.py runserver 0.0.0.0:8000
 
 Done! go to `127.0.0.1:8000`
+
+Some people like to have full control like if they whee ssh running, if you are
+thouse kind of people use:
+
+    $ fig run --rm --service-ports web /bin/bash
 
 ####Note
 
