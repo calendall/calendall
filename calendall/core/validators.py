@@ -11,6 +11,7 @@ def validate_timezone(value):
     log.debug("Validate '{0}' timezone".format(value))
 
     if value not in pytz.common_timezones:
+        log.error("Invalida timezone: '{0}'".format(value))
         raise ValidationError(_('Invalid value: %(value)s'),
                               code='invalid',
                               params={'value': value})
