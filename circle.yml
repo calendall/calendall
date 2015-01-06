@@ -16,9 +16,12 @@ dependencies:
 
 test:
   override:
-    - coverage run --omit="*/migrations/*" --source=core,profiles calendall/manage.py test
+    - coverage run --rcfile=../.coveragerc manage.py test:
+        pwd: calendall
+
   post:
-    - coveralls  # need to set up the coveralls token in "COVERALLS_REPO_TOKEN" env var
+    - coveralls:  # need to set up the coveralls token in "COVERALLS_REPO_TOKEN" env var
+        pwd: calendall
 
 notify:
   webhooks:
