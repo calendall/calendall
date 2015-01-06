@@ -45,3 +45,9 @@ def show_toolbar(request):
 DEBUG_TOOLBAR_CONFIG = {
     'SHOW_TOOLBAR_CALLBACK': 'calendall.settings.dev.show_toolbar',
 }
+
+# Redefine the global logger for debug
+LOGGING['loggers'][''] = {
+    'handlers': ['console'],
+    'level': 'DEBUG',
+}

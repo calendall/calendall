@@ -89,3 +89,56 @@ STATIC_URL = '/static/'
 
 
 AUTH_USER_MODEL = 'profiles.CalendallUser'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
+            'datefmt': "%d/%b/%Y %H:%M:%S"
+        },
+        'color': {
+            '()': 'colorlog.ColoredFormatter',
+            'format': "%(log_color)s[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
+            'datefmt': "%d/%b/%Y %H:%M:%S",
+            'log_colors': {
+                'DEBUG':    'bold_cyan',
+                'INFO':     'bold_green',
+                'WARNING':  'bold_yellow',
+                'ERROR':    'bold_red',
+                'CRITICAL': 'bg_red',
+            },
+        }
+    },
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'calendall.log',
+            'formatter': 'verbose'
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'color'
+        },
+    },
+    'loggers': {
+        # Global handler
+        '': {
+            'handlers': ['file'],
+            'level': 'INFO',
+        },
+        'django': {
+            'handlers': ['file'],
+            'propagate': True,
+            'level': 'INFO',
+        },
+        #'core': {
+        #    'handlers': ['file', 'console'],
+        #    'level': 'ERROR',
+        #    'propagate': False,
+        #},
+    }
+}
