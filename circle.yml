@@ -16,7 +16,9 @@ dependencies:
 
 test:
   override:
-    - calendall/manage.py test
+    - coverage run --omit="*/migrations/*" --source=core,profiles calendall/manage.py test
+  post:
+    - coveralls  # need to set up the coveralls token in "COVERALLS_REPO_TOKEN" env var
 
 notify:
   webhooks:

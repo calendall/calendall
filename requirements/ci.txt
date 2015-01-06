@@ -1,1 +1,3 @@
 -r base.txt
+
+coveralls==0.5
