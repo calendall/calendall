@@ -5,6 +5,10 @@ calendall
 
 [![CircleCI](https://circleci.com/gh/calendall/calendall.png?circle-token=:circle-token)](https://circleci.com/gh/calendall/calendall)
 
+[![Coverage Status](https://img.shields.io/coveralls/calendall/calendall.svg)](https://coveralls.io/r/calendall/calendall?branch=master)
+
+[![Requirements Status](https://requires.io/github/calendall/calendall/requirements.svg?branch=master)](https://requires.io/github/calendall/calendall/requirements/?branch=master)
+
 Calendall stack
 ---------------
 
