@@ -1,34 +1,18 @@
 """
 Django settings for calendall project.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/1.7/topics/settings/
-
-For the full list of settings and their values, see
-https://docs.djangoproject.com/en/1.7/ref/settings/
 """
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+# ------------- Helper stuff -------------
 import os
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
+# ------------- Security stuff -------------
 SECRET_KEY = None
-
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
-
 TEMPLATE_DEBUG = False
-
 ALLOWED_HOSTS = []
 
-
-# Application definition
-
+# ------------- Application stuff -------------
 DJANGO_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
@@ -39,6 +23,7 @@ DJANGO_APPS = (
 )
 
 THIRD_PARTY_APPS = (
+    'pipeline',
 )
 
 LOCAL_APPS = (
@@ -48,6 +33,7 @@ LOCAL_APPS = (
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
+# ------------- Middleware stuff -------------
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -58,38 +44,53 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
+# ------------- Routing & server stuff -------------
 ROOT_URLCONF = 'calendall.urls'
-
 WSGI_APPLICATION = 'calendall.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/1.7/ref/settings/#databases
-
+# ------------- Database stuff -------------
 DATABASES = None
 
-# Internationalization
-# https://docs.djangoproject.com/en/1.7/topics/i18n/
-
+# ------------- I18N & L10N stuff -------------
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'Europe/Madrid'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.7/howto/static-files/
-
+# ------------- Static & template stuff -------------
 STATIC_URL = '/static/'
+STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
+STATICFILES_FINDERS = (
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+    "pipeline.finders.PipelineFinder",
+)
 
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+)
 
+TEMPLATE_DIRS = (
+    os.path.join(BASE_DIR, 'templates'),
+)
+
+PIPELINE_CSS = {
+}
+
+PIPELINE_JS = {
+    'base-libs': {
+        'source_filenames': (
+            'bower/jquery/dist/jquery.js',
+        ),
+        'output_filename': 'js/base-libs.min.js',
+    }
+}
+
+# ------------- User stuff -------------
 AUTH_USER_MODEL = 'profiles.CalendallUser'
 
+# ------------- Logging stuff -------------
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
