@@ -4,7 +4,7 @@ Django settings for calendall project.
 
 # ------------- Helper stuff -------------
 import os
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
 # ------------- Security stuff -------------
 SECRET_KEY = None
@@ -58,9 +58,34 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
-# ------------- Static stuff -------------
+# ------------- Static & template stuff -------------
 STATIC_URL = '/static/'
 STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
+STATICFILES_FINDERS = (
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+    "pipeline.finders.PipelineFinder",
+)
+
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+)
+
+TEMPLATE_DIRS = (
+    os.path.join(BASE_DIR, 'templates'),
+)
+
+PIPELINE_CSS = {
+}
+
+PIPELINE_JS = {
+    'base-libs': {
+        'source_filenames': (
+            'bower/jquery/dist/jquery.js',
+        ),
+        'output_filename': 'js/base-libs.min.js',
+    }
+}
 
 # ------------- User stuff -------------
 AUTH_USER_MODEL = 'profiles.CalendallUser'
