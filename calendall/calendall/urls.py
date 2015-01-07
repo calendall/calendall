@@ -2,12 +2,15 @@ from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
-
 from django.views.generic import TemplateView
 
+from profiles import urls as profile_urls
+
+
 urlpatterns = patterns('',
+    url(r'^$', TemplateView.as_view(template_name='base.html')),
+    url(r'^p/', include(profile_urls, namespace="profiles")),
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^$', TemplateView.as_view(template_name='base.html'))
 )
 
 # In production static stuff should be server by http server
