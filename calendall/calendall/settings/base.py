@@ -76,12 +76,19 @@ TEMPLATE_DIRS = (
 )
 
 PIPELINE_CSS = {
+    'base-libs': {
+        'source_filenames': (
+            'bower/semantic/dist/semantic.css',
+        ),
+        'output_filename': 'css/base-libs.min.css',
+    }
 }
 
 PIPELINE_JS = {
     'base-libs': {
         'source_filenames': (
             'bower/jquery/dist/jquery.js',
+            'bower/semantic/dist/semantic.js',
         ),
         'output_filename': 'js/base-libs.min.js',
     }
