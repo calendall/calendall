@@ -63,7 +63,11 @@ Execute the script to prepare de db with the user and password for the calendall
 
 Now apply migrations:
 
-    $ fig run web ./manage.py migrate
+    $ fig run --rm web ./manage.py migrate
+
+Install statics with bower (Yup, the contianer has node, bower...):
+
+    $ fig run --rm web bower install --config.cwd=../
 
 Stop the containers:
 
