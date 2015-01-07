@@ -3,4 +3,4 @@
 django-debug-toolbar==1.2.2
 Werkzeug==0.9.6
 django-extensions==1.4.9
-colorlog==2.4.0
+colorlog==2.5.0
