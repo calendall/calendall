@@ -14,8 +14,12 @@
     {% javascript 'base-libs' %}
     {% stylesheet 'base-libs' %}
 
+    {% block head %}
+    {% endblock head %}
   </head>
   <body>
     Hello world!
+    {% block content %}
+    {% endblock content %}
   </body>
 </html>
