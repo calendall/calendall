@@ -3,4 +3,78 @@
 {% load i18n %}
 
 {% block content %}
+
+<div class="ui ten wide centered column grid">
+<!--
+    <div class="ui row">
+        <div class="column">
+        autoid: {{form.username.auto_id}}<br/>
+        name: {{form.username.name}}<br/>
+        required: {{ form.username.field.required }}<br/>
+        value: {{form.username.value}}<br/>
+        errors: {{form.username.errors}}<br/>
+        label: {{form.username.label}}<br/>
+        help text: {{form.username.help_text}}<br/>
+        max: {{form.username.max_length}}<br/>
+        min: {{form.username.min_length}}<br/>
+        </div>
+    </div>
+-->
+
+    <div class="ui row">
+        <div class="column">
+        <h1>{% trans "Join Calendall" %}</h1>
+        <h2>{% trans "You will love to import, export, create and share calendars!" %}</h2>
+        </div>
+    </div>
+    <div class="ui grid">
+      <div class="nine wide column">
+        <form accept-charset="UTF-8" action="{% url 'profiles:calendalluser_create' %}" class="ui fluid form" id="signup-form" method="post">
+
+            {% csrf_token %}
+            <!-------------- Username field ---------------------->
+            <div class="ui left icon big field input
+             {% if form.username.field.required %} corner labeled {% endif %}
+             {% if form.username.errors %} error {% endif %}
+             ">
+              <i class="user icon"></i>
+              <input id="{{ form.username.auto_id }}"
+                    name="{{ form.username.name }}"
+                    type="text"
+                    value="{{ form.username.value|default:''}}"
+                    placeholder="{{ form.username.label }}">
+
+              <div class="ui pointing label">
+                Please enter a value
+              </div>
+
+              {% if form.username.field.required %} {# Set the required icon #}
+              <div class="ui corner label">
+                    <i class="asterisk icon"></i>
+              </div>
+              {% endif %}
+
+            </div>
+
+
+            <button type="submit" class="ui primary button" id="register_button">{% trans "Create an account" %}</button>
+        </form>
+      </div>
+      <div class="right floated left aligned six wide column">
+        <div class="html ui top attached segment">
+            <div class="center aligned two column row">
+              <div class="column">
+                Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y
+              </div>
+              <div class="column">
+                Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y
+              </div>
+            </div>
+            <div class="ui top attached label">
+                {% trans "Love Calendall" %}
+            </div>
+        </div>
+      </div>
+  </div>
+</div>
 {% endblock content %}
