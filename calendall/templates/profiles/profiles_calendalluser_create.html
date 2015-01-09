@@ -10,6 +10,16 @@
         $('.ui.form');
     });
 </script>
+
+<style>
+  .fix_icon.error .icon{
+    height: 55%!important;
+  }
+  .field .label.small {
+    font-size: 14px!important;
+  }
+</style>
+
 {% endblock head%}
 
 
@@ -45,31 +55,32 @@
             {% csrf_token %}
 
             <!-------------- Username field ---------------------->
-            <div class="ui big field input
+            <div class="ui field fix_icon left icon big input
              {% if form.username.field.required %} corner labeled {% endif %}
              {% if form.username.errors %} error {% endif %}
              ">
-              <input id="{{ form.username.auto_id }}"
-                    name="{{ form.username.name }}"
-                    type="text"
-                    value="{{ form.username.value|default:''}}"
-                    placeholder="{{ form.username.label }}">
-
-              {% if form.username.errors %}
-                  <div class="ui red pointing prompt label transition visible">
-                    {% join_strings form.username.errors " and " ", " %}
+                  <input id="{{ form.username.auto_id }}"
+                        name="{{ form.username.name }}"
+                        type="text"
+                        value="{{ form.username.value|default:''}}"
+                        placeholder="{{ form.username.label }}">
+                 <i class="user icon {% if form.username.errors %} red {% endif %}"></i>
+                 {% if form.username.errors %}
+                     <div class="ui red pointing small label transition visible">
+                       {% join_strings form.username.errors " and " ", " %}
+                     </div>
+                 {% endif %}
+                  {% if form.username.field.required %} {# Set the required icon #}
+                  <div class="ui corner label">
+                        <i class="asterisk icon"></i>
                   </div>
-              {% endif %}
-
-              {% if form.username.field.required %} {# Set the required icon #}
-              <div class="ui corner label">
-                    <i class="asterisk icon"></i>
-              </div>
-              {% endif %}
+                  {% endif %}
             </div>
 
+
+
             <!-------------- email field ---------------------->
-            <div class="ui big field input
+            <div class="ui big field input fix_icon left icon
              {% if form.email.field.required %} corner labeled {% endif %}
              {% if form.email.errors %} error {% endif %}
              ">
@@ -78,9 +89,9 @@
                     type="text"
                     value="{{ form.email.value|default:''}}"
                     placeholder="{{ form.email.label }}">
-
+              <i class="mail icon {% if form.email.errors %} red {% endif %}"></i>
               {% if form.email.errors %}
-                  <div class="ui red pointing prompt label transition visible">
+                  <div class="ui red pointing small label transition visible">
                     {% join_strings form.email.errors " and " ", " %}
                   </div>
               {% endif %}
@@ -93,7 +104,7 @@
             </div>
 
             <!-------------- password field ---------------------->
-            <div class="ui big field input
+            <div class="ui big field input fix_icon left icon
              {% if form.password.field.required %} corner labeled {% endif %}
              {% if form.password.errors %} error {% endif %}
              ">
@@ -102,9 +113,9 @@
                     type="password"
                     value="{{ form.password.value|default:''}}"
                     placeholder="{{ form.password.label }}">
-
+              <i class="lock icon {% if form.password.errors %} red {% endif %}"></i>
               {% if form.password.errors %}
-                  <div class="ui red pointing prompt label transition visible">
+                  <div class="ui red pointing small label transition visible">
                     {% join_strings form.password.errors " and " ", " %}
                   </div>
               {% endif %}
@@ -117,7 +128,7 @@
             </div>
 
             <!-------------- password_verification field ---------------------->
-            <div class="ui big field input
+            <div class="ui big field input fix_icon left icon
              {% if form.password_verification.field.required %} corner labeled {% endif %}
              {% if form.password_verification.errors %} error {% endif %}
              ">
@@ -126,9 +137,9 @@
                     type="password"
                     value="{{ form.password_verification.value|default:''}}"
                     placeholder="{{ form.password_verification.label }}">
-
+              <i class="lock icon {% if form.password_verification.errors %} red {% endif %}"></i>
               {% if form.password_verification.errors %}
-                  <div class="ui red pointing prompt label transition visible">
+                  <div class="ui red pointing small label transition visible">
                     {% join_strings form.password_verification.errors " and " ", " %}
                   </div>
               {% endif %}
@@ -140,7 +151,7 @@
               {% endif %}
             </div>
 
-            <button type="submit" class="ui primary button" id="register_button">{% trans "Create an account" %}</button>
+            <button type="submit" class="ui primary huge button" id="register_button">{% trans "Create an account" %}</button>
         </form>
       </div>
       <div class="right floated left aligned six wide column">
