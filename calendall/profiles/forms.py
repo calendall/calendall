@@ -17,17 +17,19 @@ class CalendallUserCreateForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.fields['username'].required = True
+        self.fields['email'].required = True
         self.fields['password_verification'] = forms.CharField(
             label=_('Confirm your password'), max_length=128, required=True)
 
     def clean_email(self):
+        email = self.cleaned_data['email']
         # TODO: Check email exists
-        pass
+        return email
 
     def clean_username(self):
+        username = self.cleaned_data['username']
         # TODO: Check username exists
-        pass
+        return username
 
     def clean(self):
         # TODO: Check Both passwords are the same
