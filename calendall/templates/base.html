@@ -16,8 +16,33 @@
 
     {% block head %}
     {% endblock head %}
+    </style>
   </head>
   <body>
+  <div class="ui blue large secondary pointing menu">
+      <div class="left menu">
+        <a class="item active">
+          <i class="calendar icon"></i> Caledall
+        </a>
+      </div>
+
+      <div class="item">
+        <div class="ui icon input">
+          <input type="text" placeholder="{% trans "Search" %}">
+          <i class="search icon"></i>
+        </div>
+      </div>
+
+      <div class="right menu">
+        <!--<div class="item">
+          <div class="ui primary button"> {% trans "Register" %} </div>
+        </div>
+        -->
+        <div class="item">
+          <div class="ui button"> {% trans "Login" %} </div>
+        </div>
+      </div>
+    </div>
   <div class="ui page grid">
     {% block content %}
     {% endblock content %}
