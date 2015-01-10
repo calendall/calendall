@@ -50,3 +50,10 @@ class CalendallUserCreateForm(forms.ModelForm):
             raise forms.ValidationError(msg)
 
         return self.cleaned_data
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.set_password(self.cleaned_data["password"])
+        if commit:
+            user.save()
+        return user
