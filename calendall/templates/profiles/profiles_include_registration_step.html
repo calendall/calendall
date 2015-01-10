@@ -1,0 +1,27 @@
+{% load i18n %}
+
+
+
+<div class="ui three steps">
+  <div class="{% if step == 1 %} active {% elif step > 1 %} completed {% else %} disabled {% endif %} step">
+    <i class="calendar icon"></i>
+    <div class="content">
+      <div class="title">{% trans "Register" %}</div>
+      <div class="description">{% trans "Create a Calendall account" %}</div>
+    </div>
+  </div>
+  <div class="{% if step == 2 %} active {% elif step > 2 %} completed {% else %} disabled {% endif %} step">
+    <i class="upload icon"></i>
+    <div class="content">
+      <div class="title">{% trans "Import" %}</div>
+      <div class="description">{% trans "Import your public calendars" %}</div>
+    </div>
+  </div>
+  <div class="{% if step == 3 %} active {% elif step > 3 %} completed {% else %} disabled {% endif %} step">
+    <i class="share alternate icon"></i>
+    <div class="content">
+      <div class="title">{% trans "Share" %}</div>
+      <div class="description">{% trans "Share you calendars with others" %}</div>
+    </div>
+  </div>
+</div>

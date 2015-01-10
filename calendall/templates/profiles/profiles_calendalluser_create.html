@@ -48,6 +48,13 @@
         <h2>{% trans "You will love to import, export, create and share calendars!" %}</h2>
         </div>
     </div>
+
+    <div class="ui row">
+      {% include "profiles/profiles_include_registration_step.html" with step=1 %}
+    </div>
+     <div class="ui row">
+     </div>
+
     <div class="ui grid">
       <div class="nine wide column">
         <form accept-charset="UTF-8" action="{% url 'profiles:calendalluser_create' %}" class="ui fluid form" id="signup-form" method="post">
