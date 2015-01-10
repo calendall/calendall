@@ -33,6 +33,15 @@
         </div>
       </div>
 
+      {% if user.is_authenticated %}
+      <div class="ui blue inverted right menu">
+        <a class="item">
+          <i class="settings icon"></i>
+        </a>
+        <a class="item">
+          <i class="sign out icon"></i>
+        </a>
+      {% else %}
       <div class="right menu">
         <!--<div class="item">
           <div class="ui primary button"> {% trans "Register" %} </div>
@@ -42,6 +51,7 @@
           <div class="ui button"> {% trans "Login" %} </div>
         </div>
       </div>
+      {% endif %}
     </div>
   <div class="ui page grid">
     {% block content %}
