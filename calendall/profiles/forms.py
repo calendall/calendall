@@ -23,14 +23,30 @@ class CalendallUserCreateForm(forms.ModelForm):
 
     def clean_email(self):
         email = self.cleaned_data['email']
-        # TODO: Check email exists
+        if CalendallUser.objects.filter(email=email).exists():
+            log.debug("email '{0}' already taken".format(email))
+            raise forms.ValidationError(_("already taken"))
+
         return email
 
     def clean_username(self):
         username = self.cleaned_data['username']
-        # TODO: Check username exists
+        if CalendallUser.objects.filter(username=username).exists():
+            log.debug("username '{0}' already taken".format(username))
+            raise forms.ValidationError(_("already taken"))
         return username
 
     def clean(self):
-        # TODO: Check Both passwords are the same
-        pass
+        password = self.cleaned_data.get('password', "")
+        password_verification = self.cleaned_data.get('password_verification', "")
+
+        if password != password_verification:
+            log.debug("password '{0}' and {1} differ".format(
+                password, password_verification))
+
+            msg = _("doesn't match the confirmation")
+            self.add_error('password', msg)
+            self.add_error('password_verification', msg)
+            raise forms.ValidationError(msg)
+
+        return self.cleaned_data
