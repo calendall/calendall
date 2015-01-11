@@ -73,16 +73,35 @@ class TestCalendallUserCreation(TestCase):
             u = CalendallUser.objects.filter(username=i['username'])[0]
             self.assertEqual(response.client.session['_auth_user_id'], u.pk)
 
-    #def test_username_required(self):
-    #    c = Client()
-#
-#    #    for i in self.users:
-#    #        del i['username']
-#    #        response = c.post(self.url, i)
-#
-#    #        self.assertEqual(response.status_code, 200)
-#
-#    #        self.assertFormError(response,
-#    #                             CalendallUserCreateForm,
-#    #                             'username',
-    #                             'This field is required.')
+    def test_required_required(self):
+        c = Client()
+
+        required_fields = (
+            {
+                'field': 'username',
+                'error': 'This field is required.'
+            },
+            {
+                'field': 'email',
+                'error': 'This field is required.'
+            },
+            {
+                'field': 'password',
+                'error': 'This field is required.'
+            },
+            {
+                'field': 'password_verification',
+                'error': 'This field is required.'
+            },
+        )
+
+        for i in self.users:
+            for f in required_fields:
+                del i[f['field']]
+                response = c.post(self.url, i)
+
+                self.assertEqual(response.status_code, 200)
+                self.assertFormError(response,
+                                     'form',
+                                     f['field'],
+                                     f['error'])
