@@ -31,7 +31,7 @@ class TestCalendallUserCreation(TestCase):
                 'password_verification': 'claws1600'
             },
             {
-                'username': "BlackWidow",
+                'username': "Black-Widow",
                 'email': "blackwidow@gmail.com",
                 'password': 'Чёрная вдова',
                 'password_verification': 'Чёрная вдова'
@@ -73,7 +73,7 @@ class TestCalendallUserCreation(TestCase):
             u = CalendallUser.objects.filter(username=i['username'])[0]
             self.assertEqual(response.client.session['_auth_user_id'], u.pk)
 
-    def test_required_required(self):
+    def test_required_fields(self):
         c = Client()
 
         required_fields = (
@@ -105,3 +105,22 @@ class TestCalendallUserCreation(TestCase):
                                      'form',
                                      f['field'],
                                      f['error'])
+
+    def test_wrong_username(self):
+        c = Client()
+
+        error = "May only contain alphanumeric characters or dashes and cannot begin with a dash"
+        error2 = "Ensure this value has at most 30 characters (it has 31)."
+
+        wrong_usernames = (
+            ("Batman^", error),
+            ("-Batman", error),
+            ("Batman?", error),
+            ("Dark_knight", error),
+            ("バットマン", error),
+            ("BatmanBatmanBatmanBatmanBatman1", error2),
+        )
+
+        for u in wrong_usernames:
+            response = c.post(self.url, {'username': u[0]})
+            self.assertFormError(response, 'form', 'username', u[1])

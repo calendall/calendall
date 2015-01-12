@@ -1,3 +1,4 @@
+import re
 import logging
 
 from django import forms
@@ -31,6 +32,16 @@ class CalendallUserCreateForm(forms.ModelForm):
 
     def clean_username(self):
         username = self.cleaned_data['username']
+
+        # Check username is: A-Z, a-z and only dashes
+        # Can't start wiht a dash
+        # 30 max
+        r = re.compile("^.(?<!\-)[a-zA-Z0-9\-]{1,29}$")
+        if not r.match(username):
+            log.debug("username '{0}' not ^.(?<!\-)[a-zA-Z0-9\-]{{1,29}}$".format(username))
+            raise forms.ValidationError(_("May only contain alphanumeric characters or dashes and cannot begin with a dash"))
+
+        # Check username exists
         if CalendallUser.objects.filter(username=username).exists():
             log.debug("username '{0}' already taken".format(username))
             raise forms.ValidationError(_("already taken"))
