@@ -124,3 +124,33 @@ class TestCalendallUserCreation(TestCase):
         for u in wrong_usernames:
             response = c.post(self.url, {'username': u[0]})
             self.assertFormError(response, 'form', 'username', u[1])
+
+    def test_username_exists(self):
+        c = Client()
+
+        username = "batman"
+        CalendallUser(username=username).save()
+
+        response = c.post(self.url, {'username': username})
+        self.assertFormError(response, 'form', 'username', "already taken")
+
+    def test_email_exists(self):
+        c = Client()
+
+        email = "batman@gothamail.gt"
+        CalendallUser(email=email).save()
+
+        response = c.post(self.url, {'email': email})
+        self.assertFormError(response, 'form', 'email', "already taken")
+
+    def test_both_passwords_identical(self):
+
+        c = Client()
+
+        data = {
+            'password': "batmanDarkKnight",
+            'password_verificaton': "BatmanDarkKnight",
+        }
+        response = c.post(self.url, data)
+        self.assertFormError(response, 'form', 'password', "doesn't match the confirmation")
+        self.assertFormError(response, 'form', 'password_verification', "doesn't match the confirmation")
