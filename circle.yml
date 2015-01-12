@@ -10,9 +10,11 @@ machine:
 
 dependencies:
   pre:
-    - sudo apt-get update; sudo apt-get -y install libpq5 libpq-dev
+    - sudo apt-get update; sudo apt-get -y install libpq5 libpq-dev nodejs npm
   override:
     - pip install -r requirements/ci.txt
+    - npm install -g bower yuglify
+    - bower install
 
 test:
   override:

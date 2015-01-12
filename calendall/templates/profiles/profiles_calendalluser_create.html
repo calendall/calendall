@@ -1,0 +1,181 @@
+{# profiles/profiles_calendaluser_create #}
+{% extends "profiles/profiles_base.html" %}
+{% load i18n %}
+{% load core_tags %}
+
+
+{% block head %}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.ui.form');
+    });
+</script>
+
+<style>
+  .fix_icon.error .icon{
+    height: 55%!important;
+  }
+  .field .label.small {
+    font-size: 14px!important;
+  }
+</style>
+
+{% endblock head%}
+
+
+{% block content %}
+
+<div class="ui ten wide centered column grid">
+<!--
+    <div class="ui row">
+        <div class="column">
+        autoid: {{form.username.auto_id}}<br/>
+        name: {{form.username.name}}<br/>
+        required: {{ form.username.field.required }}<br/>
+        value: {{form.username.value}}<br/>
+        errors: {{form.username.errors}}<br/>
+        label: {{form.username.label}}<br/>
+        help text: {{form.username.help_text}}<br/>
+        max: {{form.username.max_length}}<br/>
+        min: {{form.username.min_length}}<br/>
+        </div>
+    </div>
+-->
+
+    <div class="ui row">
+        <div class="column">
+        <h1>{% trans "Join Calendall" %}</h1>
+        <h2>{% trans "You will love to import, export, create and share calendars!" %}</h2>
+        </div>
+    </div>
+
+    <div class="ui row">
+      {% include "profiles/profiles_include_registration_step.html" with step=1 %}
+    </div>
+     <div class="ui row">
+     </div>
+
+    <div class="ui grid">
+      <div class="nine wide column">
+        <form accept-charset="UTF-8" action="{% url 'profiles:calendalluser_create' %}" class="ui fluid form" id="signup-form" method="post">
+
+            {% csrf_token %}
+
+            <!-------------- Username field ---------------------->
+            <div class="ui field fix_icon left icon big input
+             {% if form.username.field.required %} corner labeled {% endif %}
+             {% if form.username.errors %} error {% endif %}
+             ">
+                  <input id="{{ form.username.auto_id }}"
+                        name="{{ form.username.name }}"
+                        type="text"
+                        value="{{ form.username.value|default:''}}"
+                        placeholder="{{ form.username.label }}">
+                 <i class="user icon {% if form.username.errors %} red {% endif %}"></i>
+                 {% if form.username.errors %}
+                     <div class="ui red pointing small label transition visible">
+                       {% join_strings form.username.errors " and " ", " %}
+                     </div>
+                 {% endif %}
+                  {% if form.username.field.required %} {# Set the required icon #}
+                  <div class="ui corner label">
+                        <i class="asterisk icon"></i>
+                  </div>
+                  {% endif %}
+            </div>
+
+
+
+            <!-------------- email field ---------------------->
+            <div class="ui big field input fix_icon left icon
+             {% if form.email.field.required %} corner labeled {% endif %}
+             {% if form.email.errors %} error {% endif %}
+             ">
+              <input id="{{ form.email.auto_id }}"
+                    name="{{ form.email.name }}"
+                    type="text"
+                    value="{{ form.email.value|default:''}}"
+                    placeholder="{{ form.email.label }}">
+              <i class="mail icon {% if form.email.errors %} red {% endif %}"></i>
+              {% if form.email.errors %}
+                  <div class="ui red pointing small label transition visible">
+                    {% join_strings form.email.errors " and " ", " %}
+                  </div>
+              {% endif %}
+
+              {% if form.email.field.required %} {# Set the required icon #}
+              <div class="ui corner label">
+                    <i class="asterisk icon"></i>
+              </div>
+              {% endif %}
+            </div>
+
+            <!-------------- password field ---------------------->
+            <div class="ui big field input fix_icon left icon
+             {% if form.password.field.required %} corner labeled {% endif %}
+             {% if form.password.errors %} error {% endif %}
+             ">
+              <input id="{{ form.password.auto_id }}"
+                    name="{{ form.password.name }}"
+                    type="password"
+                    value="{{ form.password.value|default:''}}"
+                    placeholder="{{ form.password.label }}">
+              <i class="lock icon {% if form.password.errors %} red {% endif %}"></i>
+              {% if form.password.errors %}
+                  <div class="ui red pointing small label transition visible">
+                    {% join_strings form.password.errors " and " ", " %}
+                  </div>
+              {% endif %}
+
+              {% if form.password.field.required %} {# Set the required icon #}
+              <div class="ui corner label">
+                    <i class="asterisk icon"></i>
+              </div>
+              {% endif %}
+            </div>
+
+            <!-------------- password_verification field ---------------------->
+            <div class="ui big field input fix_icon left icon
+             {% if form.password_verification.field.required %} corner labeled {% endif %}
+             {% if form.password_verification.errors %} error {% endif %}
+             ">
+              <input id="{{ form.password_verification.auto_id }}"
+                    name="{{ form.password_verification.name }}"
+                    type="password"
+                    value="{{ form.password_verification.value|default:''}}"
+                    placeholder="{{ form.password_verification.label }}">
+              <i class="lock icon {% if form.password_verification.errors %} red {% endif %}"></i>
+              {% if form.password_verification.errors %}
+                  <div class="ui red pointing small label transition visible">
+                    {% join_strings form.password_verification.errors " and " ", " %}
+                  </div>
+              {% endif %}
+
+              {% if form.password_verification.field.required %} {# Set the required icon #}
+              <div class="ui corner label">
+                    <i class="asterisk icon"></i>
+              </div>
+              {% endif %}
+            </div>
+
+            <button type="submit" class="ui primary huge button" id="register_button">{% trans "Create an account" %}</button>
+        </form>
+      </div>
+      <div class="right floated left aligned six wide column">
+        <div class="html ui top attached segment">
+            <div class="center aligned two column row">
+              <div class="column">
+                Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y
+              </div>
+              <div class="column">
+                Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y
+              </div>
+            </div>
+            <div class="ui top attached label">
+                {% trans "Love Calendall" %}
+            </div>
+        </div>
+      </div>
+  </div>
+</div>
+{% endblock content %}
