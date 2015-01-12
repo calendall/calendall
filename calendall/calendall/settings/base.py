@@ -106,7 +106,7 @@ PIPELINE_JS = {
 AUTH_USER_MODEL = 'profiles.CalendallUser'
 LOGIN_URL = reverse_lazy("profiles:login")
 LOGOUT_URL = ""
-LOGIN_REDIRECT_URL = ""
+LOGIN_REDIRECT_URL = reverse_lazy("profiles:login")
 
 # ------------- Logging stuff -------------
 LOGGING = {
