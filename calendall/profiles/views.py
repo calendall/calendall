@@ -7,6 +7,7 @@ from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.utils.decorators import method_decorator
+from django.http import HttpResponseRedirect
 
 from .models import CalendallUser
 from .forms import CalendallUserCreateForm, LoginForm
@@ -34,7 +35,8 @@ class CalendallUserCreate(CreateView):
 
         return self.success_url
 
-    @method_decorator(sensitive_post_parameters())
+    @method_decorator(sensitive_post_parameters('password',
+                                                'password_verification'))
     @method_decorator(csrf_protect)
     @method_decorator(never_cache)
     def dispatch(self, *args, **kwargs):
@@ -43,6 +45,22 @@ class CalendallUserCreate(CreateView):
 
 class Login(FormView):
 
-    form_class =LoginForm
+    form_class = LoginForm
     template_name = "profiles/profiles_login.html"
     success_url = settings.LOGIN_REDIRECT_URL
+
+    def form_valid(self, form):
+        login(self.request, form.get_user())
+        if self.request.session.test_cookie_worked():
+            self.request.session.delete_test_cookie()
+        return HttpResponseRedirect(self.success_url)
+
+    def form_invalid(self, form):
+        return self.render_to_response(self.get_context_data(form=form))
+
+    @method_decorator(sensitive_post_parameters('password'))
+    @method_decorator(csrf_protect)
+    @method_decorator(never_cache)
+    def dispatch(self, request, *args, **kwargs):
+        request.session.set_test_cookie()
+        return super(Login, self).dispatch(request, *args, **kwargs)
