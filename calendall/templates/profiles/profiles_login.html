@@ -13,6 +13,16 @@
 
 {% block content %}
 
+{% if form.non_field_errors %}
+<div class="ui centered column grid">
+    <div claa="ui row">
+    <div class="ui error message">
+        <div class="header">{% trans "Login failed" %}</div>
+        <!-- there is only one non field error -->
+            <p class="form-error">{{ form.non_field_errors.0 }}</p>
+    </div>
+</div>
+{% endif %}
 <div class="ui six wide centered column grid">
 
     <div class="ui row">
