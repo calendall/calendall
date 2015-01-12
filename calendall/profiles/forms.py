@@ -1,6 +1,7 @@
 import logging
 
 from django import forms
+from django.contrib.auth.forms import AuthenticationForm
 from django.utils.translation import ugettext_lazy as _
 
 from .models import CalendallUser
@@ -75,3 +76,10 @@ class CalendallUserCreateForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
+
+class LoginForm(AuthenticationForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['username'].label = _("Username or Email")
