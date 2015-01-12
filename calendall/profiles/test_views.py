@@ -1,13 +1,9 @@
-from datetime import timedelta
-
 from django.test import Client
 from django.test import TestCase
 from django.core.urlresolvers import reverse
 from django.test.utils import override_settings
 
 from .models import CalendallUser
-from .forms import CalendallUserCreateForm
-from .views import CalendallUserCreate
 
 
 @override_settings(DEBUG=True)  # For the static ones
@@ -21,8 +17,8 @@ class TestCalendallUserCreation(TestCase):
             {
                 'username': "batman",
                 'email': "darkknight@gmail.com",
-                'password': 'I\'mBatman',
-                'password_verification': 'I\'mBatman'
+                'password': 'I\'mBatman123',
+                'password_verification': 'I\'mBatman123'
             },
             {
                 'username': "woverine",
@@ -33,14 +29,14 @@ class TestCalendallUserCreation(TestCase):
             {
                 'username': "Black-Widow",
                 'email': "blackwidow@gmail.com",
-                'password': 'Чёрная вдова',
-                'password_verification': 'Чёрная вдова'
+                'password': 'bl4ck_Чёрная вдова',
+                'password_verification': 'bl4ck_Чёрная вдова'
             },
             {
                 'username': "MazingerZ",
                 'email': "MazingerZ@gmail.com",
-                'password': 'マジンガ',
-                'password_verification': 'マジンガ'
+                'password': 'M4zinger_マジンガ',
+                'password_verification': 'M4zinger_マジンガ'
             },
         )
 
@@ -143,14 +139,30 @@ class TestCalendallUserCreation(TestCase):
         response = c.post(self.url, {'email': email})
         self.assertFormError(response, 'form', 'email', "already taken")
 
+    def test_valid_password(self):
+
+        c = Client()
+
+        wrong_passwords = (
+            "a1", "a12", "a123", "a1234", "a12345",
+            "0123456789",
+            "abcdefghijk",
+        )
+
+        for p in wrong_passwords:
+            response = c.post(
+                self.url, {'password': p, 'password_verification': p})
+            self.assertFormError(response, 'form', 'password', "minimun 7 characters, one letter and one number")
+
     def test_both_passwords_identical(self):
 
         c = Client()
 
         data = {
-            'password': "batmanDarkKnight",
-            'password_verificaton': "BatmanDarkKnight",
+            'password': "b4tmanDarkKnight",
+            'password_verification': "B4tmanDarkKnight",
         }
+
         response = c.post(self.url, data)
         self.assertFormError(response, 'form', 'password', "doesn't match the confirmation")
         self.assertFormError(response, 'form', 'password_verification', "doesn't match the confirmation")

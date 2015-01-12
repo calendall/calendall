@@ -47,11 +47,24 @@ class CalendallUserCreateForm(forms.ModelForm):
             raise forms.ValidationError(_("already taken"))
         return username
 
+    def clean_password(self):
+        password = self.cleaned_data['password']
+
+        # Don't compile, they are simple regex
+        has_letter = re.search('[a-zA-Z]', password)
+        has_number = re.search('[0-9]', password)
+
+        if not (len(password) > 7 and has_number and has_letter):
+            msg = _("minimun 7 characters, one letter and one number")
+            raise forms.ValidationError(msg)
+
+        return password
+
     def clean(self):
         password = self.cleaned_data.get('password', "")
         password_verification = self.cleaned_data.get('password_verification', "")
 
-        if password != password_verification:
+        if password and password_verification and password != password_verification:
             log.debug("password '{0}' and {1} differ".format(
                 password, password_verification))
 
