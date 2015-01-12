@@ -5,4 +5,6 @@ from . import views
 urlpatterns = patterns('',
     url(r'^register$', views.CalendallUserCreate.as_view(),
         name="calendalluser_create"),
+
+    url(r'^login$', views.Login.as_view(), name="login"),
 )

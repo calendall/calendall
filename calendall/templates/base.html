@@ -43,12 +43,13 @@
         </a>
       {% else %}
       <div class="right menu">
-        <!--<div class="item">
-          <div class="ui primary button"> {% trans "Register" %} </div>
-        </div>
-        -->
         <div class="item">
-          <div class="ui button"> {% trans "Login" %} </div>
+          {% url 'profiles:login' as login_url %}
+          {% if request.path == login_url %}
+            <a class="ui blue button" href="{% url 'profiles:calendalluser_create' %}"> {% trans "Register" %} </a>
+          {% else %}
+            <a class="ui button" href="{% url 'profiles:login' %}"> {% trans "Login" %} </a>
+          {% endif %}
         </div>
       </div>
       {% endif %}

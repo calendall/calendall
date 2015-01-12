@@ -1,0 +1,62 @@
+{# profiles/profileslogin #}
+{% extends "profiles/profiles_base.html" %}
+{% load i18n %}
+{% load core_tags %}
+
+{% block head %}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.ui.form');
+    });
+</script>
+{% endblock head %}
+
+{% block content %}
+
+<div class="ui six wide centered column grid">
+
+    <div class="ui row">
+        <div class="ui top attached segment sixteen wide column">
+            <div class="ui hidden divider"></div>
+            <form accept-charset="UTF-8" action="{% url 'profiles:login' %}" class="ui fluid form" id="signin-form" method="post">
+
+                {% csrf_token %}
+                <!-------------- Username field ---------------------->
+                <div class="ui field input {% if form.username.errors %} error {% endif %}">
+                    <label>{{ form.username.label }}</label>
+                    <input id="{{ form.username.auto_id }}"
+                            name="{{ form.username.name }}"
+                            type="text"
+                            value="{{ form.username.value|default:''}}">
+                     {% if form.username.errors %}
+                         <div class="ui red pointing small label transition visible">
+                           {% join_strings form.username.errors " and " ", " %}
+                         </div>
+                     {% endif %}
+                </div>
+
+                <!-------------- password field ---------------------->
+                <div class="ui field input {% if form.password.errors %} error {% endif %}">
+                    <label>{{ form.password.label }} <a href="">({% trans "forgot password" %})</a></label>
+                    <input id="{{ form.password.auto_id }}"
+                            name="{{ form.password.name }}"
+                            type="password"
+                            value="{{ form.password.value|default:''}}">
+                     {% if form.password.errors %}
+                         <div class="ui red pointing small label transition visible">
+                           {% join_strings form.password.errors " and " ", " %}
+                         </div>
+                     {% endif %}
+                </div>
+
+                <button type="submit" class="ui primary button" id="login_button">{% trans "Login" %}</button>
+            </form>
+        <div class="ui top attached big label">
+            {% trans "Login" %}
+        </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock content %}

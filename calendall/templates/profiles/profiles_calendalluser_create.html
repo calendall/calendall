@@ -20,28 +20,12 @@
   }
 </style>
 
-{% endblock head%}
+{% endblock head %}
 
 
 {% block content %}
 
 <div class="ui ten wide centered column grid">
-<!--
-    <div class="ui row">
-        <div class="column">
-        autoid: {{form.username.auto_id}}<br/>
-        name: {{form.username.name}}<br/>
-        required: {{ form.username.field.required }}<br/>
-        value: {{form.username.value}}<br/>
-        errors: {{form.username.errors}}<br/>
-        label: {{form.username.label}}<br/>
-        help text: {{form.username.help_text}}<br/>
-        max: {{form.username.max_length}}<br/>
-        min: {{form.username.min_length}}<br/>
-        </div>
-    </div>
--->
-
     <div class="ui row">
         <div class="column">
         <h1>{% trans "Join Calendall" %}</h1>
@@ -91,7 +75,7 @@
              {% if form.email.field.required %} corner labeled {% endif %}
              {% if form.email.errors %} error {% endif %}
              ">
-              <input id="{{ form.email.auto_id }}"
+              <input id="{{ form.emaifl.auto_id }}"
                     name="{{ form.email.name }}"
                     type="text"
                     value="{{ form.email.value|default:''}}"
