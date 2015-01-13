@@ -3,8 +3,8 @@ import logging
 from django import forms
 from django.contrib.auth import authenticate
 from django.contrib.auth.forms import AuthenticationForm
-from django.utils.translation import ugettext_lazy as _
 from django.core.validators import validate_email
+from django.utils.translation import ugettext_lazy as _
 
 from .models import CalendallUser
 from . import utils
