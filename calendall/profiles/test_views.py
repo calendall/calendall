@@ -2,6 +2,7 @@ from django.test import Client
 from django.test import TestCase
 from django.core.urlresolvers import reverse
 from django.test.utils import override_settings
+from django.conf import settings
 
 from .models import CalendallUser
 
@@ -49,7 +50,7 @@ class TestCalendallUserCreation(TestCase):
             self.assertRedirects(response, self.url)
             self.assertEqual(response.status_code, 302)
 
-            u = CalendallUser.objects.filter(username=i['username'])[0]
+            u = CalendallUser.objects.get(username=i['username'])
             self.assertEqual(u.email, i['email'])
             self.assertTrue(u.check_password(i['password']))
             self.assertTrue(u.check_password(i['password_verification']))
@@ -66,7 +67,7 @@ class TestCalendallUserCreation(TestCase):
             self.assertEqual(response.status_code, 302)
 
             # Check auto login verying the session
-            u = CalendallUser.objects.filter(username=i['username'])[0]
+            u = CalendallUser.objects.get(username=i['username'])
             self.assertEqual(response.client.session['_auth_user_id'], u.pk)
 
     def test_required_fields(self):
@@ -166,3 +167,49 @@ class TestCalendallUserCreation(TestCase):
         response = c.post(self.url, data)
         self.assertFormError(response, 'form', 'password', "doesn't match the confirmation")
         self.assertFormError(response, 'form', 'password_verification', "doesn't match the confirmation")
+
+
+@override_settings(DEBUG=True)  # For the static ones
+class TestLogin(TestCase):
+
+    def setUp(self):
+
+        self.url = reverse("profiles:login")
+        self.data = {
+            'username': "batman",
+            'email': "darkknight@gmail.com",
+            'password': 'I\'mBatman123',
+        }
+        u = CalendallUser(**self.data)
+        u.set_password(self.data['password'])
+        u.save()
+
+    def test_username_login_ok(self):
+        c = Client()
+        data = {
+            'username': self.data['username'],
+            'password': self.data['password']
+        }
+
+        response = c.post(self.url, data)
+
+        self.assertRedirects(response, reverse("profiles:login"))
+        self.assertEqual(response.status_code, 302)
+
+        u = CalendallUser.objects.get(username=self.data['username'])
+        self.assertEqual(response.client.session['_auth_user_id'], u.pk)
+
+    def test_email_login_ok(self):
+        c = Client()
+        data = {
+            'username': self.data['email'],
+            'password': self.data['password']
+        }
+
+        response = c.post(self.url, data)
+
+        self.assertRedirects(response, reverse("profiles:login"))
+        self.assertEqual(response.status_code, 302)
+
+        u = CalendallUser.objects.get(username=self.data['username'])
+        self.assertEqual(response.client.session['_auth_user_id'], u.pk)
