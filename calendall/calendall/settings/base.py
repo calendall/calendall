@@ -102,6 +102,16 @@ PIPELINE_JS = {
     }
 }
 
+# ------------- Email Stuff -------------
+EMAIL_BACKEND = None
+EMAIL_SUPPORT = "support@calendall.com"
+EMAIL_NOREPLY = "noreply@calendall.com"
+# EMAIL_USE_TLS = True
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_HOST_USER = 'me@gmail.com'
+# EMAIL_HOST_PASSWORD = 'password'
+
 # ------------- User stuff -------------
 AUTH_USER_MODEL = 'profiles.CalendallUser'
 LOGIN_URL = reverse_lazy("profiles:login")
