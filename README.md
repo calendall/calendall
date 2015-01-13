@@ -1,6 +1,12 @@
 calendall
 =========
 
+[![CircleCI](https://circleci.com/gh/calendall/calendall.png?style=shield&circle-token=:circle-token)](https://circleci.com/gh/calendall/calendall)
+[![Coverage Status](https://img.shields.io/coveralls/calendall/calendall.svg)](https://coveralls.io/r/calendall/calendall?branch=master)
+[![Requirements Status](https://requires.io/github/calendall/calendall/requirements.svg?branch=master)](https://requires.io/github/calendall/calendall/requirements/?branch=master)
+[![Dependency Status](https://www.versioneye.com/user/projects/54b53768050646e16d000007/badge.svg?style=flat)](https://www.versioneye.com/user/projects/54b53768050646e16d000007)
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/calendall/calendall?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Calendall is the next generation public calendar repository. You will be able
 to explore, rate, export, import and share public calendars.
 
@@ -15,17 +21,6 @@ Also this project is made with full stack development, this means:
     * Different environments
 
 So could be used as a project to learn from.
-
-Status
-======
-
-[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/calendall/calendall?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
-[![CircleCI](https://circleci.com/gh/calendall/calendall.png?style=shield&circle-token=:circle-token)](https://circleci.com/gh/calendall/calendall)
-
-[![Coverage Status](https://img.shields.io/coveralls/calendall/calendall.svg)](https://coveralls.io/r/calendall/calendall?branch=master)
-
-[![Requirements Status](https://requires.io/github/calendall/calendall/requirements.svg?branch=master)](https://requires.io/github/calendall/calendall/requirements/?branch=master)
 
 Calendall stack
 ---------------
