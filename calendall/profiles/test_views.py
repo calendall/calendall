@@ -208,8 +208,56 @@ class TestLogin(TestCase):
 
         response = c.post(self.url, data)
 
-        self.assertRedirects(response, reverse("profiles:login"))
+        self.assertRedirects(response, self.url)
         self.assertEqual(response.status_code, 302)
 
         u = CalendallUser.objects.get(username=self.data['username'])
         self.assertEqual(response.client.session['_auth_user_id'], u.pk)
+
+    def test_invalid_login_username(self):
+        c = Client()
+        response = c.post(self.url, {"username": "noUser", "password": "pass"})
+        error = "Please enter a correct username and password. Note that both fields may be case-sensitive."
+        self.assertEqual(response.status_code, 200)
+        self.assertFormError(response, 'form', "", error)
+
+    def test_invalid_login_email(self):
+        c = Client()
+
+        data = (
+            "username@gmail.com",
+            "username@gmail,com",
+            "username@gmail",
+            "@gmail.com",
+        )
+
+        for i in data:
+            response = c.post(self.url, {"username": i, "password": "pass"})
+            error = "Please enter a correct username and password. Note that both fields may be case-sensitive."
+            self.assertEqual(response.status_code, 200)
+            self.assertFormError(response, 'form', "", error)
+
+
+
+    def test_required_login_fields(self):
+        c = Client()
+        required_fields = (
+            {
+                'field': 'username',
+                'error': 'This field is required.'
+            },
+            {
+                'field': 'password',
+                'error': 'This field is required.'
+            },
+        )
+
+        for f in required_fields:
+            del self.data[f['field']]
+            response = c.post(self.url, self.data)
+
+            self.assertEqual(response.status_code, 200)
+            self.assertFormError(response,
+                                 'form',
+                                 f['field'],
+                                 f['error'])

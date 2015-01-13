@@ -110,6 +110,8 @@ class LoginForm(AuthenticationForm):
                 self.user_cache = authenticate(username=username,
                                                password=password)
             if self.user_cache is None:
+                log.debug("Invalid login for user '{0}'".format(
+                    username_or_email))
                 raise forms.ValidationError(
                     self.error_messages['invalid_login'],
                     code='invalid_login',
