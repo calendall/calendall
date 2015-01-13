@@ -1,13 +1,15 @@
 import logging
-from django.views.generic import CreateView, FormView
-from django.core.urlresolvers import reverse_lazy
-from django.contrib.auth import authenticate, login, logout
+
 from django.conf import settings
+from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
+from django.core.urlresolvers import reverse_lazy
+from django.utils.decorators import method_decorator
+from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
-from django.utils.decorators import method_decorator
-from django.http import HttpResponseRedirect
+from django.views.generic import CreateView, FormView, RedirectView
 
 from .models import CalendallUser
 from .forms import CalendallUserCreateForm, LoginForm
@@ -73,3 +75,13 @@ class Login(FormView):
     def dispatch(self, request, *args, **kwargs):
         request.session.set_test_cookie()
         return super().dispatch(request, *args, **kwargs)
+
+
+class Logout(RedirectView):
+
+    url = settings.LOGIN_REDIRECT_URL
+
+    def get(self, request, *args, **kwargs):
+        logout(request)
+        messages.success(request, _("successfuly logged out"))
+        return super().get(request, *args, **kwargs)

@@ -1,8 +1,7 @@
+from django.core.urlresolvers import reverse
 from django.test import Client
 from django.test import TestCase
-from django.core.urlresolvers import reverse
 from django.test.utils import override_settings
-from django.conf import settings
 
 from .models import CalendallUser
 
@@ -169,7 +168,7 @@ class TestCalendallUserCreation(TestCase):
         self.assertFormError(response, 'form', 'password_verification', "doesn't match the confirmation")
 
 
-@override_settings(DEBUG=True)  # For the static ones
+@override_settings(DEBUG=True)
 class TestLogin(TestCase):
 
     def setUp(self):
@@ -262,8 +261,6 @@ class TestLogin(TestCase):
             self.assertEqual(response.status_code, 200)
             self.assertFormError(response, 'form', "", error)
 
-
-
     def test_required_login_fields(self):
         c = Client()
         required_fields = (
@@ -286,3 +283,45 @@ class TestLogin(TestCase):
                                  'form',
                                  f['field'],
                                  f['error'])
+
+
+@override_settings(DEBUG=True)
+class TestLogout(TestCase):
+
+    def setUp(self):
+
+        self.url = reverse("profiles:logout")
+        self.data = {
+            'username': "batman",
+            'email': "darkknight@gmail.com",
+            'password': 'I\'mBatman123',
+        }
+
+        u = CalendallUser(**self.data)
+        u.set_password(self.data['password'])
+        u.save()
+
+        # Logged client for everyone
+        self.c = Client()
+        self.c.login(username=self.data['username'],
+                     password=self.data['password'])
+
+    def test_logout_ok(self):
+
+        u = CalendallUser.objects.get(username=self.data['username'])
+        self.assertEqual(self.c.session['_auth_user_id'], u.pk)
+
+        # logout
+        response = self.c.get(self.url)
+
+        # Check logged out
+        with self.assertRaises(KeyError):
+            response.client.session['_auth_user_id']
+
+    def test_logout_redirect(self):
+        response = self.c.get(self.url)
+
+        self.assertRedirects(response,
+                             reverse("profiles:login"),
+                             status_code=301)
+        self.assertEqual(response.status_code, 301)
