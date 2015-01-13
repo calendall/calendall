@@ -214,6 +214,31 @@ class TestLogin(TestCase):
         u = CalendallUser.objects.get(username=self.data['username'])
         self.assertEqual(response.client.session['_auth_user_id'], u.pk)
 
+    def test_next_login_form_creation(self):
+        c = Client()
+        next_url = "/custom/url/for/testing"
+        response = c.get(self.url, {'next': next_url})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response,
+            '<input type="hidden" name="next" value="{0}" />'.format(next_url))
+
+    def test_next_login_ok(self):
+        c = Client()
+        data = {
+            'username': self.data['email'],
+            'password': self.data['password'],
+            'next': "/"
+        }
+
+        response = c.post(self.url, data)
+
+        self.assertRedirects(response, data['next'])
+        self.assertEqual(response.status_code, 302)
+
+        u = CalendallUser.objects.get(username=self.data['username'])
+        self.assertEqual(response.client.session['_auth_user_id'], u.pk)
+
     def test_invalid_login_username(self):
         c = Client()
         response = c.post(self.url, {"username": "noUser", "password": "pass"})

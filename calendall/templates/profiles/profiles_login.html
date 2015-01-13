@@ -31,6 +31,8 @@
             <form accept-charset="UTF-8" action="{% url 'profiles:login' %}" class="ui fluid form" id="signin-form" method="post">
 
                 {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.GET.next }}" />
+
                 <!-------------- Username field ---------------------->
                 <div class="ui field input {% if form.username.errors %} error {% endif %}">
                     <label>{{ form.username.label }}</label>

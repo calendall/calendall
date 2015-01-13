@@ -53,14 +53,23 @@ class Login(FormView):
         login(self.request, form.get_user())
         if self.request.session.test_cookie_worked():
             self.request.session.delete_test_cookie()
-        return HttpResponseRedirect(self.success_url)
+        return super().form_valid(form)
 
-    def form_invalid(self, form):
-        return self.render_to_response(self.get_context_data(form=form))
+    def get_success_url(self):
+        # First check POST
+        next_url = self.request.POST.get('next', None)
+
+        if not next_url:
+            next_url = self.request.GET.get('next', None)
+
+        if next_url:
+            self.success_url = next_url
+
+        return self.success_url
 
     @method_decorator(sensitive_post_parameters('password'))
     @method_decorator(csrf_protect)
     @method_decorator(never_cache)
     def dispatch(self, request, *args, **kwargs):
         request.session.set_test_cookie()
-        return super(Login, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
