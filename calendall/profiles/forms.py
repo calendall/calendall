@@ -1,7 +1,10 @@
 import logging
 
 from django import forms
+from django.contrib.auth import authenticate
+from django.contrib.auth.forms import AuthenticationForm
 from django.utils.translation import ugettext_lazy as _
+from django.core.validators import validate_email
 
 from .models import CalendallUser
 from . import utils
@@ -75,3 +78,46 @@ class CalendallUserCreateForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
+
+class LoginForm(AuthenticationForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['username'].label = _("Username or Email")
+
+    # REimplement the login to allow email and username login
+    def clean(self):
+        username_or_email = self.cleaned_data.get('username')
+        password = self.cleaned_data.get('password')
+        dont_check = False
+
+        if username_or_email and password:
+            # Check if is an email
+            if "@" in username_or_email:
+                # Validate the email
+                try:
+                    validate_email(username_or_email)
+                    username = CalendallUser.objects.get(
+                        email=username_or_email).username
+                except (forms.ValidationError, CalendallUser.DoesNotExist):
+                    dont_check = True
+            else:
+                username = username_or_email
+
+            # Do not check if not a valid email
+            if not dont_check:
+                self.user_cache = authenticate(username=username,
+                                               password=password)
+            if self.user_cache is None:
+                log.debug("Invalid login for user '{0}'".format(
+                    username_or_email))
+                raise forms.ValidationError(
+                    self.error_messages['invalid_login'],
+                    code='invalid_login',
+                    params={'username': self.username_field.verbose_name},
+                )
+            else:
+                self.confirm_login_allowed(self.user_cache)
+
+        return self.cleaned_data

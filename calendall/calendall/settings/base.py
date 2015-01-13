@@ -1,9 +1,12 @@
 """
 Django settings for calendall project.
 """
+import os
+
+from django.core.urlresolvers import reverse_lazy
+from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
 
 # ------------- Helper stuff -------------
-import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
 # ------------- Security stuff -------------
@@ -67,6 +70,11 @@ STATICFILES_FINDERS = (
     "pipeline.finders.PipelineFinder",
 )
 
+# FIX: This var will be deprecated
+TEMPLATE_CONTEXT_PROCESSORS = TCP + (
+    'django.core.context_processors.request',
+)
+
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
@@ -96,6 +104,9 @@ PIPELINE_JS = {
 
 # ------------- User stuff -------------
 AUTH_USER_MODEL = 'profiles.CalendallUser'
+LOGIN_URL = reverse_lazy("profiles:login")
+LOGOUT_URL = ""
+LOGIN_REDIRECT_URL = reverse_lazy("profiles:login")
 
 # ------------- Logging stuff -------------
 LOGGING = {
