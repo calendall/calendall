@@ -50,6 +50,7 @@ MIDDLEWARE_CLASSES = (
 # ------------- Routing & server stuff -------------
 ROOT_URLCONF = 'calendall.urls'
 WSGI_APPLICATION = 'calendall.wsgi.application'
+DOMAIN = "calendall.io"
 
 # ------------- Database stuff -------------
 DATABASES = None

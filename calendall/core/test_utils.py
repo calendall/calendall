@@ -1,7 +1,9 @@
+from django.conf import settings
 from django.core import mail
 from django.template.loader import render_to_string
 from django.test import TestCase
 from django.test.utils import override_settings
+import premailer
 
 from .utils import send_templated_email
 
@@ -17,7 +19,8 @@ class TestEmailUtils(TestCase):
         data = {
             "subject": "I'm Batman",
             "context": {
-                "user": "Joker"
+                "user": "Joker",
+                "domain": settings.DOMAIN
             },
             "template_name": "tests/emails/tests_email_test",
             "sender": "batman@gmail.com",
@@ -28,6 +31,8 @@ class TestEmailUtils(TestCase):
                                       data['context'])
         result_html = render_to_string(data['template_name'] + ".html",
                                        data['context'])
+        result_html = premailer.transform(result_html,
+                                          base_url="http://" + settings.DOMAIN)
 
         send_templated_email(**data)
         self.assertEquals(len(mail.outbox), 1)

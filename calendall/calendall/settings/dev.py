@@ -3,6 +3,7 @@ import os
 from .base import *
 
 
+DOMAIN = "local.calendall.io"
 SECRET_KEY = 'h*&xek^=4o@y(r!kckn!ng1*si4g^*v$2+mz!6043*_j41*ycs'
 
 DEBUG = True
