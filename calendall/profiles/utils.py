@@ -27,7 +27,7 @@ def valid_password(password):
     has_letter = letters_regex.search(password)
     has_number = numbers_regex.search(password)
 
-    return len(password) > min_password_chars and has_number and has_letter
+    return len(password) >= min_password_chars and has_number and has_letter
 
 
 def email_exists(email):
