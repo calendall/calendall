@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.core.urlresolvers import reverse_lazy
+from django.template import RequestContext
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.debug import sensitive_post_parameters
@@ -14,6 +15,7 @@ from django.views.generic import CreateView, FormView, RedirectView
 from .models import CalendallUser
 from .forms import CalendallUserCreateForm, LoginForm
 
+from core import utils
 
 log = logging.getLogger(__name__)
 
@@ -34,6 +36,19 @@ class CalendallUserCreate(CreateView):
             if user.is_active:
                 log.debug("Auto login '{0}'".format(user))
                 login(self.request, user)
+
+        # Set the context for the emails
+        data = RequestContext(self.request, self.get_context_data())[0]
+
+        # Send welcome
+        print(self.get_context_data())
+        utils.send_templated_email("profiles/emails/profiles_email_welcome",
+                                   data,
+                                   _("Welcome to Calendall"),
+                                   settings.EMAIL_SUPPORT,
+                                   (user.email,),
+                                   self.request.build_absolute_uri())
+        # Send activation email
 
         return self.success_url
 

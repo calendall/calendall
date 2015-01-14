@@ -90,6 +90,14 @@ PIPELINE_CSS = {
             'bower/semantic/dist/semantic.css',
         ),
         'output_filename': 'css/base-libs.min.css',
+    },
+    'email-libs': {
+        'source_filenames': (
+            "bower/transactional-email-templates/templates/styles.css",
+        ),
+        'output_filename': 'css/email-libs.min.css',
+        # This shouldn't be compressed because we use premailer, for now use
+        # like this
     }
 }
 
