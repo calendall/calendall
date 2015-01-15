@@ -1,12 +1,16 @@
+from django.conf import settings
+from django.core import mail
 from django.core.urlresolvers import reverse
 from django.test import Client
 from django.test import TestCase
 from django.test.utils import override_settings
+from django.utils.translation import ugettext_lazy as _
 
 from .models import CalendallUser
 
 
-@override_settings(DEBUG=True)  # For the static ones
+@override_settings(DEBUG=True,
+                   EMAIL_BACKEND=settings.TEST_EMAIL_BACKEND)
 class TestCalendallUserCreation(TestCase):
 
     def setUp(self):
@@ -55,6 +59,14 @@ class TestCalendallUserCreation(TestCase):
             self.assertTrue(u.check_password(i['password_verification']))
 
         self.assertEqual(CalendallUser.objects.count(), len(self.users))
+
+    def test_correct_creation_with_emails(self):
+        c = Client()
+        for i, u in enumerate(self.users):
+            c.post(self.url, u)
+            self.assertEqual(mail.outbox[i].recipients()[0], u['email'])
+            self.assertEqual(mail.outbox[i].subject, _("Welcome to Calendall"))
+            self.assertEqual(len(mail.outbox), i+1)
 
     def test_autologin_in_correct_creation(self):
         c = Client()
