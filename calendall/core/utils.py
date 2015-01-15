@@ -34,9 +34,8 @@ def send_templated_email(template_name, context, subject, sender, receivers,
                                    context_instance=request_context)
 
     # Inline CSS and links
-    # If we are testing don't use premail:
-    if not settings.TESTING:
-        html_render = premailer.transform(html_render, base_url=base_url)
+    # Mock in tests
+    html_render = premailer.transform(html_render, base_url=base_url)
 
     send_mail(
         html_message=html_render,

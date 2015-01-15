@@ -1,3 +1,5 @@
+from unittest import mock
+
 from django.conf import settings
 from django.core import mail
 from django.core.urlresolvers import reverse
@@ -5,8 +7,10 @@ from django.test import Client
 from django.test import TestCase
 from django.test.utils import override_settings
 from django.utils.translation import ugettext_lazy as _
+import premailer
 
 from .models import CalendallUser
+from core.mock_utils import local_url_loader
 
 
 @override_settings(DEBUG=True,
@@ -44,7 +48,9 @@ class TestCalendallUserCreation(TestCase):
             },
         )
 
-    def test_correct_creation(self):
+    @mock.patch.object(premailer.Premailer, '_load_external',
+                       side_effect=local_url_loader)
+    def test_correct_creation(self, mock_method):
         c = Client()
 
         for i in self.users:
@@ -60,7 +66,9 @@ class TestCalendallUserCreation(TestCase):
 
         self.assertEqual(CalendallUser.objects.count(), len(self.users))
 
-    def test_correct_creation_with_emails(self):
+    @mock.patch.object(premailer.Premailer, '_load_external',
+                       side_effect=local_url_loader)
+    def test_correct_creation_with_emails(self, mock_method):
         c = Client()
         for i, u in enumerate(self.users):
             c.post(self.url, u)
@@ -68,7 +76,9 @@ class TestCalendallUserCreation(TestCase):
             self.assertEqual(mail.outbox[i].subject, _("Welcome to Calendall"))
             self.assertEqual(len(mail.outbox), i+1)
 
-    def test_autologin_in_correct_creation(self):
+    @mock.patch.object(premailer.Premailer, '_load_external',
+                       side_effect=local_url_loader)
+    def test_autologin_in_correct_creation(self, mock_method):
         c = Client()
 
         for i in self.users:
