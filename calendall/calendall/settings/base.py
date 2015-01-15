@@ -2,12 +2,15 @@
 Django settings for calendall project.
 """
 import os
+import sys
 
 from django.core.urlresolvers import reverse_lazy
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
 
 # ------------- Helper stuff -------------
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+# Are we running tests?
+TESTING = len(sys.argv) > 1 and sys.argv[1] == 'test'
 
 # ------------- Security stuff -------------
 SECRET_KEY = None
@@ -112,6 +115,7 @@ PIPELINE_JS = {
 }
 
 # ------------- Email Stuff -------------
+TEST_EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
 EMAIL_BACKEND = None
 EMAIL_SUPPORT = "support@calendall.com"
 EMAIL_NOREPLY = "noreply@calendall.com"
