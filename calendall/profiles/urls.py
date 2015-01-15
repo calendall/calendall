@@ -8,4 +8,7 @@ urlpatterns = patterns('',
 
     url(r'^login$', views.Login.as_view(), name="login"),
     url(r'^logout$', views.Logout.as_view(), name="logout"),
+    url(r'^validate/(?P<username>[a-zA-Z0-9\-]{1,30})/(?P<token>[a-f0-9]{32})$',
+        views.Validate.as_view(), name="validate"),
+
 )

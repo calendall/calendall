@@ -100,3 +100,36 @@ class Logout(RedirectView):
         logout(request)
         messages.success(request, _("successfuly logged out"))
         return super().get(request, *args, **kwargs)
+
+
+class Validate(RedirectView):
+    url = settings.LOGIN_REDIRECT_URL
+
+    def get(self, request, *args, **kwargs):
+        error = True
+
+        # Check if the values is correct
+        try:
+            u = CalendallUser.objects.get(username=self.kwargs['username'])
+
+            if u.validated:
+                log.debug("User '{0}' already validated".format(u))
+                messages.info(request, _("Account already validated"))
+                error = False
+
+            elif u.validation_token == self.kwargs['token']:
+                u.validated = True
+                u.save()
+                log.info("User '{0}' validated".format(u))
+                messages.success(request, _("successfuly account validated"))
+                error = False
+
+        except CalendallUser.DoesNotExist:
+            pass  # This will be error
+
+        if error:
+            log.debug(
+                "Error validating user '{0}'".format(self.kwargs['username']))
+            messages.error(request, _("Error validating the account"))
+
+        return super().get(request, *args, **kwargs)
