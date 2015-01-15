@@ -1,4 +1,5 @@
 import logging
+import uuid
 
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
@@ -25,6 +26,11 @@ class CalendallUserCreate(CreateView):
     form_class = CalendallUserCreateForm
     template_name = "profiles/profiles_calendalluser_create.html"
     success_url = reverse_lazy('profiles:calendalluser_create')
+
+    # Auto generate the validation token
+    def form_valid(self, form):
+        form.instance.validation_token = str(uuid.uuid4()).replace("-", "")
+        return super().form_valid(form)
 
     def get_success_url(self):
         # Auto log in process:
