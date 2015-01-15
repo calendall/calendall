@@ -1,4 +1,5 @@
 from unittest import mock
+import uuid
 
 from django.conf import settings
 from django.core import mail
@@ -355,3 +356,96 @@ class TestLogout(TestCase):
                              reverse("profiles:login"),
                              status_code=301)
         self.assertEqual(response.status_code, 301)
+
+
+@override_settings(DEBUG=True)
+class TestValidate(TestCase):
+
+    def setUp(self):
+
+        self.data = {
+            'username': "batman",
+            'email': "darkknight@gmail.com",
+            'password': 'I\'mBatman123',
+            'validation_token': str(uuid.uuid4()).replace("-", "")
+        }
+
+        self.user = CalendallUser(**self.data)
+        self.user.set_password(self.data['password'])
+        self.user.save()
+
+    def test_validate_ok(self):
+        c = Client()
+
+        data = {
+            'username': self.user.username,
+            'token': self.user.validation_token,
+        }
+
+        url = reverse("profiles:validate", kwargs=data)
+
+        response = c.get(url)
+        self.assertRedirects(response,
+                             reverse("profiles:login"),
+                             status_code=301)
+        self.assertEqual(response.status_code, 301)
+
+        self.assertTrue(CalendallUser.objects.get(id=self.user.id).validated)
+
+    def test_already_validated(self):
+        c = Client()
+
+        self.user.validated = True
+        self.user.save()
+
+        data = {
+            'username': self.user.username,
+            'token': self.user.validation_token,
+        }
+
+        url = reverse("profiles:validate", kwargs=data)
+
+        response = c.get(url)
+
+        self.assertRedirects(response,
+                             reverse("profiles:login"),
+                             status_code=301)
+        self.assertEqual(response.status_code, 301)
+
+        self.assertTrue(CalendallUser.objects.get(id=self.user.id).validated)
+
+    def test_validate_wrong_token(self):
+        c = Client()
+
+        data = {
+            'username': self.user.username,
+            'token': str(uuid.uuid4()).replace("-", ""),
+        }
+
+        url = reverse("profiles:validate", kwargs=data)
+
+        response = c.get(url)
+        self.assertRedirects(response,
+                             reverse("profiles:login"),
+                             status_code=301)
+        self.assertEqual(response.status_code, 301)
+
+        self.assertFalse(CalendallUser.objects.get(id=self.user.id).validated)
+
+    def test_validate_wrong_username(self):
+        c = Client()
+
+        data = {
+            'username': self.user.username + "a",
+            'token': self.user.validation_token,
+        }
+
+        url = reverse("profiles:validate", kwargs=data)
+
+        response = c.get(url)
+        self.assertRedirects(response,
+                             reverse("profiles:login"),
+                             status_code=301)
+        self.assertEqual(response.status_code, 301)
+
+        self.assertFalse(CalendallUser.objects.get(id=self.user.id).validated)
