@@ -50,6 +50,14 @@ class CalendallUserCreate(CreateView):
                                    (user.email,),
                                    self.request)
 
+        # Send validation email
+        utils.send_templated_email("profiles/emails/profiles_email_validation",
+                                   self.get_context_data(),
+                                   _("Validate your Calendall account"),
+                                   settings.EMAIL_NOREPLY,
+                                   (user.email,),
+                                   self.request)
+
         return self.success_url
 
     @method_decorator(sensitive_post_parameters('password',

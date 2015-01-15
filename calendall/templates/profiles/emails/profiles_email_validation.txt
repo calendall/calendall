@@ -1,0 +1,25 @@
+{# profiles/emails/profiles_email_activation.html #}
+{% extends "base_email.html" %}
+{% load i18n %}
+
+{% block title %}
+{% blocktrans with name=user.username %}
+{{ name }} verify your Calendall account
+{% endblocktrans %}
+{% endblock title %}
+
+{% block content %}
+
+{% trans "We need your email validation!" %}
+
+{% blocktrans %}
+    Please Validate your account so we can send you
+    notifications :)
+{% endblocktrans %}
+
+follow this link: {% url "profiles:validate" user.username user.validation_token %}
+
+---
+&mdash; Calendall with <3
+
+{% endblock content %}
