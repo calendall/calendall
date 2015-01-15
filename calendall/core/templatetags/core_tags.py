@@ -1,4 +1,5 @@
 from django import template
+from django.contrib.messages import constants
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -31,3 +32,18 @@ def join_strings(strs, last_join_word, join_word):
         final_str = strs[0]
 
     return final_str
+
+
+@register.filter()
+def message_css_class(value):
+    """Returns the CSS class of a message based on the message"""
+
+    classes = {
+        constants.DEBUG: "pink",
+        constants.INFO: "info",
+        constants.SUCCESS: "positive",
+        constants.WARNING: "warning",
+        constants.ERROR: "error",
+    }
+
+    return classes[value.level]
