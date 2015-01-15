@@ -72,9 +72,17 @@ class TestCalendallUserCreation(TestCase):
         c = Client()
         for i, u in enumerate(self.users):
             c.post(self.url, u)
-            self.assertEqual(mail.outbox[i].recipients()[0], u['email'])
-            self.assertEqual(mail.outbox[i].subject, _("Welcome to Calendall"))
-            self.assertEqual(len(mail.outbox), i+1)
+            # Small hack for the email inbox index
+            idx = 0
+            if i:
+                idx = i * 2
+            self.assertEqual(mail.outbox[idx].recipients()[0], u['email'])
+            self.assertEqual(mail.outbox[idx].subject, _("Welcome to Calendall"))
+            self.assertEqual(mail.outbox[idx+1].recipients()[0], u['email'])
+            self.assertEqual(
+                mail.outbox[idx+1].subject, _("Validate your Calendall account"))
+
+        self.assertEqual(len(mail.outbox), len(self.users)*2)
 
     @mock.patch.object(premailer.Premailer, '_load_external',
                        side_effect=local_url_loader)
