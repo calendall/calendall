@@ -55,3 +55,4 @@ target/
 
 # Static stuff
 calendall/static/bower/*
+calendall/test-email-output/*

@@ -1,0 +1,28 @@
+{# profiles/emails/profiles_email_activation.txt #}
+{% extends "base_email.txt" %}
+{% load i18n %}
+
+{% block title %}
+
+{% blocktrans with name=user.username %}
+{{ name }} welcome to Calendall!
+{% endblocktrans %}
+
+{% endblock title %}
+
+{% block content %}
+    {% trans "You just started!" %}
+    {% blocktrans %}
+        You just registered on Calendall
+    {% endblocktrans %}
+
+    {% blocktrans %}
+        Now you can import, export and share a world of calendars. never forget about an event!
+    {% endblocktrans %}
+
+    {% blocktrans %}
+        Thank you for using Calendall :)
+    {% endblocktrans %}
+
+&mdash; Calendall with <3
+{% endblock content %}

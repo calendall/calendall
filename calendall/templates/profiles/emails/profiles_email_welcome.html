@@ -1,0 +1,49 @@
+{# profiles/emails/profiles_email_activation.html #}
+{% extends "base_email.html" %}
+{% load i18n %}
+
+{% block title %}
+{% blocktrans with name=user.username %}
+{{ name }} welcome to Calendall!
+{% endblocktrans %}
+{% endblock title %}
+
+{% block content %}
+	<tr>
+		<td class="alert alert-good">
+			{% trans "You just started!" %}
+		</td>
+	</tr>
+	<tr>
+		<td class="content-wrap">
+			<table width="100%" cellpadding="0" cellspacing="0">
+				<tr>
+					<td class="content-block">
+					{% blocktrans %}
+						You just registered on Calendall
+					{% endblocktrans %}
+					</td>
+				</tr>
+				<tr>
+					<td class="content-block">
+					{% blocktrans %}
+						Now you can import, export and share a world of calendars. never forget about an event!
+					{% endblocktrans %}
+					</td>
+				</tr>
+				<tr>
+					<td class="content-block">
+					{% blocktrans %}
+						Thank you for using Calendall :)
+					{% endblocktrans %}
+					</td>
+				</tr>
+				<tr>
+					<td class="content-block">
+						&mdash; Calendall with <3
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+{% endblock content %}

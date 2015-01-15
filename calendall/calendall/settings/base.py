@@ -2,12 +2,15 @@
 Django settings for calendall project.
 """
 import os
+import sys
 
 from django.core.urlresolvers import reverse_lazy
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
 
 # ------------- Helper stuff -------------
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+# Are we running tests?
+TESTING = len(sys.argv) > 1 and sys.argv[1] == 'test'
 
 # ------------- Security stuff -------------
 SECRET_KEY = None
@@ -50,6 +53,7 @@ MIDDLEWARE_CLASSES = (
 # ------------- Routing & server stuff -------------
 ROOT_URLCONF = 'calendall.urls'
 WSGI_APPLICATION = 'calendall.wsgi.application'
+DOMAIN = "calendall.io"
 
 # ------------- Database stuff -------------
 DATABASES = None
@@ -89,6 +93,14 @@ PIPELINE_CSS = {
             'bower/semantic/dist/semantic.css',
         ),
         'output_filename': 'css/base-libs.min.css',
+    },
+    'email-libs': {
+        'source_filenames': (
+            "bower/transactional-email-templates/templates/styles.css",
+        ),
+        'output_filename': 'css/email-libs.min.css',
+        # This shouldn't be compressed because we use premailer, for now use
+        # like this
     }
 }
 
@@ -103,6 +115,7 @@ PIPELINE_JS = {
 }
 
 # ------------- Email Stuff -------------
+TEST_EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
 EMAIL_BACKEND = None
 EMAIL_SUPPORT = "support@calendall.com"
 EMAIL_NOREPLY = "noreply@calendall.com"

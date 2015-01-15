@@ -1,0 +1,13 @@
+{# base_email.txt #}
+{% load i18n %}
+
+================================================================================
+{% block title %}{% endblock title %}
+================================================================================
+
+
+{% block content %}
+{% endblock content %}
+
+---
+Calendall {% trans "your favourite public calendar repository" %}

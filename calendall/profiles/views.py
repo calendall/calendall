@@ -14,6 +14,7 @@ from django.views.generic import CreateView, FormView, RedirectView
 from .models import CalendallUser
 from .forms import CalendallUserCreateForm, LoginForm
 
+from core import utils
 
 log = logging.getLogger(__name__)
 
@@ -34,6 +35,14 @@ class CalendallUserCreate(CreateView):
             if user.is_active:
                 log.debug("Auto login '{0}'".format(user))
                 login(self.request, user)
+
+        # Send welcome email
+        utils.send_templated_email("profiles/emails/profiles_email_welcome",
+                                   self.get_context_data(),
+                                   _("Welcome to Calendall"),
+                                   settings.EMAIL_SUPPORT,
+                                   (user.email,),
+                                   self.request)
 
         return self.success_url
 

@@ -1,0 +1,5 @@
+Welcome to Gotham city
+
+Hi {{ user }}, I'm Batman and I want to welcome you to the safest city in the world
+
+Your favourite superhero batman (http://{{ domain }}/heroes/dark-knight)

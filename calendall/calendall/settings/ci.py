@@ -1,6 +1,7 @@
 from .base import *
 
 
+DOMAIN = "ci.calendall.io"
 SECRET_KEY = '^7$+=8rj(utk59qe_5j%+sn0jzc^&)zxua04aik8+@t0-yjoj2'
 
 DATABASES = {
