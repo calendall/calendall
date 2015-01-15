@@ -17,11 +17,17 @@ class CalendallUser(AbstractUser):
                                 choices=TIMEZONES,
                                 default='UTC',
                                 validators=[validate_timezone])
+    # Tokens are uuid without slashes
     reset_token = models.CharField(_("reset token"),
-                                   max_length=36,
+                                   max_length=32,
                                    blank=True)
     reset_expiration = models.DateTimeField(_("reset token expiration"),
                                             null=True)
+
+    validated = models.BooleanField(_("User account validated"), default=False)
+    validation_token = models.CharField(_("User account validation token"),
+                                        max_length=32,
+                                        blank=True)
 
     def __str__(self):
         return self.email
