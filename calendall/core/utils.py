@@ -23,7 +23,8 @@ def send_templated_email(template_name, context, subject, sender, receivers,
         # Is more handy to use 'request' instance in render_to_string:
         # https://github.com/django/django/commit/eaa1a22341aef5b92f5c3cd682f01e61c4159262
         request_context = RequestContext(request)
-        base_url = request.build_absolute_uri()
+
+        base_url = "http://" + request.get_host()
     else:
         base_url = "http://" + settings.DOMAIN
 
