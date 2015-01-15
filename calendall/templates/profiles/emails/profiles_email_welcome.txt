@@ -3,13 +3,15 @@
 {% load i18n %}
 
 {% block title %}
-    {% trans "{{ user.username }} welcome to Calendall!" %}
+
+{% blocktrans with name=user.username %}
+{{ name }} welcome to Calendall!
+{% endblocktrans %}
+
 {% endblock title %}
 
 {% block content %}
-
     {% trans "You just started!" %}
-
     {% blocktrans %}
         You just registered on Calendall
     {% endblocktrans %}
