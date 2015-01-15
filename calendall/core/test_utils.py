@@ -3,16 +3,12 @@ from django.core import mail
 from django.template.loader import render_to_string
 from django.test import TestCase
 from django.test.utils import override_settings
-import premailer
 
 from .utils import send_templated_email
 
 
-TEST_EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
-
-
 @override_settings(DEBUG=True,
-                   EMAIL_BACKEND=TEST_EMAIL_BACKEND)
+                   EMAIL_BACKEND=settings.TEST_EMAIL_BACKEND)
 class TestEmailUtils(TestCase):
 
     def test_send_email(self):
@@ -31,8 +27,10 @@ class TestEmailUtils(TestCase):
                                       data['context'])
         result_html = render_to_string(data['template_name'] + ".html",
                                        data['context'])
-        result_html = premailer.transform(result_html,
-                                          base_url="http://" + settings.DOMAIN)
+
+        # Don't use premailer in tests, because of static retrieval errors
+        # result_html = premailer.transform(result_html,
+        #                                  base_url="http://" + settings.DOMAIN)
 
         send_templated_email(**data)
         self.assertEquals(len(mail.outbox), 1)
