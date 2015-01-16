@@ -1,0 +1,90 @@
+{# profiles/profiles_calendaluser_create #}
+{% extends "profiles/profiles_base.html" %}
+{% load i18n %}
+{% load gravatar %}
+{% load core_tags %}
+
+
+{% block content %}
+
+<div class="ui fourteen wide centered column grid">
+
+  <div class="ui row">
+    <div class="four wide column">
+      <div class="ui vertical menu">
+        <div class="big header item">
+           {% trans "Personal settings" %}
+        </div>
+
+        <a class="active item">
+          {% trans "Profile" %}
+        </a>
+        <a class="item">
+          {% trans "Account settings" %}
+        </a>
+      </div>
+
+    </div>
+
+    <div class="right floated left aligned twelve wide column">
+      <div class="ui top attached segment">
+        <div class="ui hidden divider"></div>
+        <div class="ui hidden divider"></div>
+         <div class="left aligned two column row">
+            <div class="ui top big attached label">
+              {% trans "Public profile" %}
+            </div>
+            <div class="column">
+                <div class="ui small header">{% trans "Profile picture "%}</div>
+                <img class="ui tiny rounded image" src="{% gravatar_url user.email 150 %}"/>
+                <div class="content">
+                  <a class="ui button" href="https://gravatar.com"> {% trans "Set new picture in gravatar" %}</a>
+                </div>
+            </div>
+          </div>
+          <div class="ui divider"></div>
+            {# Form #}
+            <div class="column">
+              <form accept-charset="UTF-8" action="{% url 'profiles:profile_settings' %}" class="ui fluid form" id="profile-settings-form" method="post">
+
+                  {% csrf_token %}
+                  <div class="field">
+                    <label>{% trans "Name" %}</label>
+                      <div class="ui field left input
+                       {% if form.first_name.errors %} error {% endif %}
+                       ">
+                          <input id="{{ form.first_name.auto_id }}"
+                                name="{{ form.first_name.name }}"
+                                type="text"
+                                value="{{ form.first_name.value|default:''}}"
+                                placeholder="{{ form.first_name.label }}">
+                         {% if form.first_name.errors %}
+                             <div class="ui red pointing small label transition visible">
+                               {% join_strings form.first_name.errors " and " ", " %}
+                             </div>
+                         {% endif %}
+                      </div>
+
+                    <div class="ui field left input
+                       {% if form.last_name.errors %} error {% endif %}
+                       ">
+                          <input id="{{ form.last_name.auto_id }}"
+                                name="{{ form.last_name.name }}"
+                                type="text"
+                                value="{{ form.last_name.value|default:''}}"
+                                placeholder="{{ form.last_name.label }}">
+                         {% if form.last_name.errors %}
+                             <div class="ui red pointing small label transition visible">
+                               {% join_strings form.last_name.errors " and " ", " %}
+                             </div>
+                         {% endif %}
+                      </div>
+                  </div>
+                  <button type="submit" class="ui primary button" id="update_button">{% trans "Update profile" %}</button>
+                </form>
+              </div>
+          </div>
+          </div>
+  </div>
+</div>
+{% endblock content %}

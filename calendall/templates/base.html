@@ -2,6 +2,8 @@
 {% load i18n %}
 {% load pipeline %}
 {% load gravatar %}
+{% load core_tags %}
+
 
 <!DOCTYPE html>
 <html>
@@ -66,6 +68,21 @@
   </div>
 
   <div class="ui page grid">
+
+  {% if messages %}
+  <div class="ui centered column grid">
+      {% for message in messages %}
+      <div claa="ui row">
+      <div class="ui {{ message|message_css_class }} message">
+          <i class="close icon"></i>
+          <p>{{ message }}</p>
+      </div>
+      {% endfor %}
+  </div>
+  {% endif %}
+
+
+
     {% block content %}
     {% endblock content %}
   </div>
