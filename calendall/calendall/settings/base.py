@@ -30,6 +30,7 @@ DJANGO_APPS = (
 
 THIRD_PARTY_APPS = (
     'pipeline',
+    'django_gravatar'
 )
 
 LOCAL_APPS = (
@@ -136,6 +137,9 @@ AUTH_USER_MODEL = 'profiles.CalendallUser'
 LOGIN_URL = reverse_lazy("profiles:login")
 LOGOUT_URL = reverse_lazy("profiles:logout")
 LOGIN_REDIRECT_URL = reverse_lazy("profiles:login")
+
+# ------------- Gravatar stuff -------------
+GRAVATAR_DEFAULT_IMAGE = "identicon"
 
 # ------------- Logging stuff -------------
 LOGGING = {

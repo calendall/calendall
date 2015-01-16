@@ -1,6 +1,7 @@
 {# base.html #}
 {% load pipeline %}
 {% load i18n %}
+{% load gravatar %}
 
 <!DOCTYPE html>
 <html>
@@ -37,6 +38,11 @@
 
       {% if user.is_authenticated %}
       <div class="ui blue inverted right menu">
+
+        <a class="item" href="">
+          <img class="" src="{% gravatar_url user.email 30 %}" />
+          <div> {{ user.username }}</div>
+        </a>
         <a class="item">
           <i class="settings icon"></i>
         </a>
