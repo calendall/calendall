@@ -12,18 +12,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Calendall</title>
 
-    {% javascript 'base-libs' %}
     {% stylesheet 'base-libs' %}
+    {% stylesheet 'custom-styles' %}
 
+    {% javascript 'base-libs' %}
     {% javascript 'calendall-js' %}
 
     {% block head %}
     {% endblock head %}
-    </style>
+
   </head>
   <body>
-    <div class="ui blue big main menu">
-      <div class="container">
+    <div class="ui main menu">
+      <div class="ui container">
           <div class="title item">
               <i class="calendar icon"></i>
               Caledall

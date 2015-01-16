@@ -95,6 +95,12 @@ PIPELINE_CSS = {
         ),
         'output_filename': 'css/base-libs.min.css',
     },
+    'custom-styles': {
+        'source_filenames': (
+            'css/style.css',
+        ),
+        'output_filename': 'css/custom-styles.min.css',
+    },
     'email-libs': {
         'source_filenames': (
             "bower/transactional-email-templates/templates/styles.css",

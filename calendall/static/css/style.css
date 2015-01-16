@@ -1,0 +1,7 @@
+
+/* Set the container width */
+.container {
+  position: relative;
+  width: 1020px;
+  margin: 0px auto;
+}
