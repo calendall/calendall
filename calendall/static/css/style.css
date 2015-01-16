@@ -5,3 +5,11 @@
   width: 1020px;
   margin: 0px auto;
 }
+
+/* Icon fix for input icon on registration */
+.fix_icon.error .icon{
+height: 55%!important;
+}
+.field .label.small {
+font-size: 14px!important;
+}
