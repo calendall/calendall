@@ -3,20 +3,27 @@
 {% load i18n %}
 {% load core_tags %}
 
-{% block head %}
-<script type="text/javascript">
-    $(document).ready(function () {
-        $('.ui.form');
-    });
-</script>
-{% endblock head %}
-
 {% block content %}
+
+{% if messages %}
+<div class="ui centered column grid">
+    {% for message in messages %}
+    <div claa="ui row">
+    <div class="ui {{ message|message_css_class }} message">
+        <i class="close icon"></i>
+        <p>{{ message }}</p>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+
 
 {% if form.non_field_errors %}
 <div class="ui centered column grid">
     <div claa="ui row">
     <div class="ui error message">
+    <i class="close icon"></i>
         <div class="header">{% trans "Login failed" %}</div>
         <!-- there is only one non field error -->
             <p class="form-error">{{ form.non_field_errors.0 }}</p>

@@ -111,6 +111,12 @@ PIPELINE_JS = {
             'bower/semantic/dist/semantic.js',
         ),
         'output_filename': 'js/base-libs.min.js',
+    },
+    'calendall-js': {
+        'source_filenames': (
+            'js/semantic-actions.js',
+        ),
+        'output_filename': 'js/calendall.min.js',
     }
 }
 

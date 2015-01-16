@@ -35,9 +35,9 @@ DEV_MIDDLEWARE = (
 INSTALLED_APPS += DEV_APPS
 MIDDLEWARE_CLASSES = DEV_MIDDLEWARE + MIDDLEWARE_CLASSES
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-# EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-# EMAIL_FILE_PATH = 'test-email-output'
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+EMAIL_FILE_PATH = 'test-email-output'
 
 
 # In Docker the IP changes, Accept always except ajax, with thi method we don't

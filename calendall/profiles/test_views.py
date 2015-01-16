@@ -1,4 +1,5 @@
 from unittest import mock
+import uuid
 
 from django.conf import settings
 from django.core import mail
@@ -72,9 +73,17 @@ class TestCalendallUserCreation(TestCase):
         c = Client()
         for i, u in enumerate(self.users):
             c.post(self.url, u)
-            self.assertEqual(mail.outbox[i].recipients()[0], u['email'])
-            self.assertEqual(mail.outbox[i].subject, _("Welcome to Calendall"))
-            self.assertEqual(len(mail.outbox), i+1)
+            # Small hack for the email inbox index
+            idx = 0
+            if i:
+                idx = i * 2
+            self.assertEqual(mail.outbox[idx].recipients()[0], u['email'])
+            self.assertEqual(mail.outbox[idx].subject, _("Welcome to Calendall"))
+            self.assertEqual(mail.outbox[idx+1].recipients()[0], u['email'])
+            self.assertEqual(
+                mail.outbox[idx+1].subject, _("Validate your Calendall account"))
+
+        self.assertEqual(len(mail.outbox), len(self.users)*2)
 
     @mock.patch.object(premailer.Premailer, '_load_external',
                        side_effect=local_url_loader)
@@ -347,3 +356,96 @@ class TestLogout(TestCase):
                              reverse("profiles:login"),
                              status_code=301)
         self.assertEqual(response.status_code, 301)
+
+
+@override_settings(DEBUG=True)
+class TestValidate(TestCase):
+
+    def setUp(self):
+
+        self.data = {
+            'username': "batman",
+            'email': "darkknight@gmail.com",
+            'password': 'I\'mBatman123',
+            'validation_token': str(uuid.uuid4()).replace("-", "")
+        }
+
+        self.user = CalendallUser(**self.data)
+        self.user.set_password(self.data['password'])
+        self.user.save()
+
+    def test_validate_ok(self):
+        c = Client()
+
+        data = {
+            'username': self.user.username,
+            'token': self.user.validation_token,
+        }
+
+        url = reverse("profiles:validate", kwargs=data)
+
+        response = c.get(url)
+        self.assertRedirects(response,
+                             reverse("profiles:login"),
+                             status_code=301)
+        self.assertEqual(response.status_code, 301)
+
+        self.assertTrue(CalendallUser.objects.get(id=self.user.id).validated)
+
+    def test_already_validated(self):
+        c = Client()
+
+        self.user.validated = True
+        self.user.save()
+
+        data = {
+            'username': self.user.username,
+            'token': self.user.validation_token,
+        }
+
+        url = reverse("profiles:validate", kwargs=data)
+
+        response = c.get(url)
+
+        self.assertRedirects(response,
+                             reverse("profiles:login"),
+                             status_code=301)
+        self.assertEqual(response.status_code, 301)
+
+        self.assertTrue(CalendallUser.objects.get(id=self.user.id).validated)
+
+    def test_validate_wrong_token(self):
+        c = Client()
+
+        data = {
+            'username': self.user.username,
+            'token': str(uuid.uuid4()).replace("-", ""),
+        }
+
+        url = reverse("profiles:validate", kwargs=data)
+
+        response = c.get(url)
+        self.assertRedirects(response,
+                             reverse("profiles:login"),
+                             status_code=301)
+        self.assertEqual(response.status_code, 301)
+
+        self.assertFalse(CalendallUser.objects.get(id=self.user.id).validated)
+
+    def test_validate_wrong_username(self):
+        c = Client()
+
+        data = {
+            'username': self.user.username + "a",
+            'token': self.user.validation_token,
+        }
+
+        url = reverse("profiles:validate", kwargs=data)
+
+        response = c.get(url)
+        self.assertRedirects(response,
+                             reverse("profiles:login"),
+                             status_code=301)
+        self.assertEqual(response.status_code, 301)
+
+        self.assertFalse(CalendallUser.objects.get(id=self.user.id).validated)

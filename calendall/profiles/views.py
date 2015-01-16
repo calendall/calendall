@@ -1,4 +1,5 @@
 import logging
+import uuid
 
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
@@ -26,6 +27,11 @@ class CalendallUserCreate(CreateView):
     template_name = "profiles/profiles_calendalluser_create.html"
     success_url = reverse_lazy('profiles:calendalluser_create')
 
+    # Auto generate the validation token
+    def form_valid(self, form):
+        form.instance.validation_token = str(uuid.uuid4()).replace("-", "")
+        return super().form_valid(form)
+
     def get_success_url(self):
         # Auto log in process:
         # Check password & user is ok (this isn't neccesary)
@@ -41,6 +47,14 @@ class CalendallUserCreate(CreateView):
                                    self.get_context_data(),
                                    _("Welcome to Calendall"),
                                    settings.EMAIL_SUPPORT,
+                                   (user.email,),
+                                   self.request)
+
+        # Send validation email
+        utils.send_templated_email("profiles/emails/profiles_email_validation",
+                                   self.get_context_data(),
+                                   _("Validate your Calendall account"),
+                                   settings.EMAIL_NOREPLY,
                                    (user.email,),
                                    self.request)
 
@@ -93,4 +107,37 @@ class Logout(RedirectView):
     def get(self, request, *args, **kwargs):
         logout(request)
         messages.success(request, _("successfuly logged out"))
+        return super().get(request, *args, **kwargs)
+
+
+class Validate(RedirectView):
+    url = settings.LOGIN_REDIRECT_URL
+
+    def get(self, request, *args, **kwargs):
+        error = True
+
+        # Check if the values is correct
+        try:
+            u = CalendallUser.objects.get(username=self.kwargs['username'])
+
+            if u.validated:
+                log.debug("User '{0}' already validated".format(u))
+                messages.info(request, _("Account already validated"))
+                error = False
+
+            elif u.validation_token == self.kwargs['token']:
+                u.validated = True
+                u.save()
+                log.info("User '{0}' validated".format(u))
+                messages.success(request, _("successfuly account validated"))
+                error = False
+
+        except CalendallUser.DoesNotExist:
+            pass  # This will be error
+
+        if error:
+            log.debug(
+                "Error validating user '{0}'".format(self.kwargs['username']))
+            messages.error(request, _("Error validating the account"))
+
         return super().get(request, *args, **kwargs)
