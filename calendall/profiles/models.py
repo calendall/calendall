@@ -28,6 +28,12 @@ class CalendallUser(AbstractUser):
     validation_token = models.CharField(_("User account validation token"),
                                         max_length=32,
                                         blank=True)
+    url = models.URLField(_("User homepage"),
+                          blank=True)
+
+    location = models.CharField(_("User location"),
+                                max_length=30,
+                                blank=True)
 
     def __str__(self):
         return self.email
