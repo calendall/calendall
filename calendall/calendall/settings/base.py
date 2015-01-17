@@ -49,6 +49,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'core.middleware.TimezoneMiddleware'
 )
 
 # ------------- Routing & server stuff -------------
@@ -61,7 +62,7 @@ DATABASES = None
 
 # ------------- I18N & L10N stuff -------------
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'Europe/Madrid'
+TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
