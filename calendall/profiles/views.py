@@ -157,6 +157,11 @@ class ProfileSettings(LoginRequiredMixin, UpdateView):
     def get_object(self):
         return get_object_or_404(CalendallUser, pk=self.request.user.id)
 
+    def form_valid(self, form):
+        # Set the timezone of the user in the session
+        self.request.session['user-tz'] = form.cleaned_data['timezone']
+        return super().form_valid(form)
+
     def get_success_url(self):
         messages.success(self.request, _("Profile updated"))
         return super().get_success_url()

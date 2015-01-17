@@ -120,6 +120,30 @@
                      {% endif %}
                  </div>
 
+                  <div class="ui field input {% if form.timezone.errors %} error {% endif %}">
+                   <label>{{ form.timezone.label }}</label>
+
+                   <div class="ui fluid search selection dropdown">
+                     <input type="hidden"
+                            id="{{ form.timezone.auto_id }}"
+                            name="{{ form.timezone.name }}"
+                            value="{{ form.timezone.value|default:''}}">
+                     <i class="dropdown icon"></i>
+                     <div class="default text">{{ form.timezone.help_text }}</div>
+
+                     <div class="menu">
+                       {% for timezone, y in form.fields.timezone.choices %}
+                           <div class="item" data-value="{{ timezone }}">{{ timezone }}</div>
+                       {% endfor %}
+                     </div>
+
+                      {% if form.timezone.errors %}
+                         <div class="ui red pointing left small label transition visible">
+                           {% join_strings form.timezone.errors " and " ", " %}
+                         </div>
+                      {% endif %}
+                    </div>
+                  </div>
 
                   <button type="submit" class="ui primary button" id="update_button">{% trans "Update profile" %}</button>
                 </form>
