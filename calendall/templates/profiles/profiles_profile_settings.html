@@ -55,7 +55,7 @@
           <div class="ui divider"></div>
             {# Form #}
             <div class="column">
-              <form accept-charset="UTF-8" action="{% url 'profiles:profile_settings' %}" class="ui fluid form" id="profile-settings-form" method="post">
+              <form accept-charset="UTF-8" action="{% url 'profiles:profile_settings' %}" class="ui fluid form settings" id="profile-settings-form" method="post">
 
                   {% csrf_token %}
                   <!-------------- first and last name fields ---------------------->
@@ -70,7 +70,7 @@
                                 value="{{ form.first_name.value|default:''}}"
                                 placeholder="{{ form.first_name.label }}">
                          {% if form.first_name.errors %}
-                             <div class="ui red pointing small label transition visible">
+                             <div class="ui red pointing left small label transition visible">
                                {% join_strings form.first_name.errors " and " ", " %}
                              </div>
                          {% endif %}
@@ -85,12 +85,42 @@
                                 value="{{ form.last_name.value|default:''}}"
                                 placeholder="{{ form.last_name.label }}">
                          {% if form.last_name.errors %}
-                             <div class="ui red pointing small label transition visible">
+                             <div class="ui red pointing left small label transition visible">
                                {% join_strings form.last_name.errors " and " ", " %}
                              </div>
                          {% endif %}
                       </div>
                   </div>
+
+                  <!-------------- URL field ---------------------->
+                  <div class="ui field input {% if form.url.errors %} error {% endif %}">
+                    <label>{{ form.url.label }}</label>
+                    <input id="{{ form.url.auto_id }}"
+                            name="{{ form.url.name }}"
+                            type="text"
+                            value="{{ form.url.value|default:''}}">
+                     {% if form.url.errors %}
+                         <div class="ui red pointing left small label transition visible">
+                           {% join_strings form.url.errors " and " ", " %}
+                         </div>
+                     {% endif %}
+                 </div>
+
+                  <!-------------- Locaion field ---------------------->
+                  <div class="ui field input {% if form.location.errors %} error {% endif %}">
+                    <label>{{ form.location.label }}</label>
+                    <input id="{{ form.location.auto_id }}"
+                            name="{{ form.location.name }}"
+                            type="text"
+                            value="{{ form.location.value|default:''}}">
+                     {% if form.location.errors %}
+                         <div class="ui red pointing left small label transition visible">
+                           {% join_strings form.location.errors " and " ", " %}
+                         </div>
+                     {% endif %}
+                 </div>
+
+
                   <button type="submit" class="ui primary button" id="update_button">{% trans "Update profile" %}</button>
                 </form>
               </div>

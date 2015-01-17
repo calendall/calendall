@@ -19,3 +19,7 @@ font-size: 14px!important;
   margin: 0.5em 0px 0.5em;
   color: rgba(0, 0, 0, 0.6);
 }
+
+.ui.form.settings input[type="text"] {
+    width: 350px;
+}
