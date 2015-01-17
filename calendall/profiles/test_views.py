@@ -476,7 +476,8 @@ class TestProfileSettings(TestCase):
             "first_name": "Bruce",
             "last_name": "Wayne",
             "url": "http://darkknight.com/",
-            "location": "Gotham city"
+            "location": "Gotham city",
+            "timezone": "America/New_York"
         }
 
         response = self.c.post(self.url, data)
@@ -490,13 +491,15 @@ class TestProfileSettings(TestCase):
         self.assertEqual(u.last_name, data['last_name'])
         self.assertEqual(u.url, data['url'])
         self.assertEqual(u.location, data['location'])
+        self.assertEqual(u.timezone, data['timezone'])
 
     def test_update_profile_blank_ok(self):
         data = {
             "first_name": "Bruce",
             "last_name": "Wayne",
             "url": "http://darkknight.com/",
-            "location": "Gotham city"
+            "location": "Gotham city",
+            "timezone": "America/New_York"
         }
 
         # Update the model
@@ -505,13 +508,15 @@ class TestProfileSettings(TestCase):
         u.last_name = data['last_name']
         u.url = data['url']
         u.location = data['location']
+        u.timezone = data['timezone']
         u.save()
 
         data_after = {
             "first_name": "",
             "last_name": "",
             "url": "",
-            "location": ""
+            "location": "",
+            "timezone": "America/New_York",
         }
 
         response = self.c.post(self.url, data_after)
@@ -554,6 +559,20 @@ class TestProfileSettings(TestCase):
             response = self.c.post(self.url, {'location': l})
             self.assertFormError(response, 'form', 'location',
                                  error.format(len(l)))
+
+    def test_wrong_timezone(self):
+
+        error = "Select a valid choice. {0} is not one of the available choices."
+
+        wrong_timezones = (
+            "Earth",
+            "America/Gotham_city",
+            "America/Arkhman",
+        )
+
+        for t in wrong_timezones:
+            response = self.c.post(self.url, {'timezone': t})
+            self.assertFormError(response, 'form', 'timezone', error.format(t))
 
     def test_enter_settings_not_logged(self):
 

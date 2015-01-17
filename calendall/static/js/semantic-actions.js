@@ -6,4 +6,8 @@ $(document).ready(function () {
     $('.message .close').on('click', function() {
         $(this).closest('.message').fadeOut();
     });
+
+    // Dropdown
+    $('.ui.dropdown')
+        .dropdown();
 });
