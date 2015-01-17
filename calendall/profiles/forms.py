@@ -121,3 +121,15 @@ class LoginForm(AuthenticationForm):
                 self.confirm_login_allowed(self.user_cache)
 
         return self.cleaned_data
+
+
+class ProfileSettingsForm(forms.ModelForm):
+
+    class Meta:
+        model = CalendallUser
+        fields = ["first_name", "last_name", "url", "location"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['url'].label = _("URL")
+        self.fields['location'].label = _("Location")

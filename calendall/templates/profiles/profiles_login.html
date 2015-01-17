@@ -5,20 +5,6 @@
 
 {% block content %}
 
-{% if messages %}
-<div class="ui centered column grid">
-    {% for message in messages %}
-    <div claa="ui row">
-    <div class="ui {{ message|message_css_class }} message">
-        <i class="close icon"></i>
-        <p>{{ message }}</p>
-    </div>
-    {% endfor %}
-</div>
-{% endif %}
-
-
-
 {% if form.non_field_errors %}
 <div class="ui centered column grid">
     <div claa="ui row">

@@ -5,3 +5,21 @@
   width: 1020px;
   margin: 0px auto;
 }
+
+/* Icon fix for input icon on registration */
+.fix_icon.error .icon{
+height: 55%!important;
+}
+.field .label.small {
+font-size: 14px!important;
+}
+
+/* Small note description */
+.small-note {
+  margin: 0.5em 0px 0.5em;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.ui.form.settings input[type="text"] {
+    width: 350px;
+}

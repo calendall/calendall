@@ -449,3 +449,124 @@ class TestValidate(TestCase):
         self.assertEqual(response.status_code, 301)
 
         self.assertFalse(CalendallUser.objects.get(id=self.user.id).validated)
+
+@override_settings(DEBUG=True)
+class TestProfileSettings(TestCase):
+
+    def setUp(self):
+
+        self.url = reverse("profiles:profile_settings")
+        self.data = {
+            'username': "batman",
+            'email': "darkknight@gmail.com",
+            'password': 'I\'mBatman123',
+        }
+
+        u = CalendallUser(**self.data)
+        u.set_password(self.data['password'])
+        u.save()
+
+        # Logged client for everyone
+        self.c = Client()
+        self.c.login(username=self.data['username'],
+                     password=self.data['password'])
+
+    def test_update_profile_ok(self):
+        data = {
+            "first_name": "Bruce",
+            "last_name": "Wayne",
+            "url": "http://darkknight.com/",
+            "location": "Gotham city"
+        }
+
+        response = self.c.post(self.url, data)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, self.url)
+
+        u = CalendallUser.objects.get(email=self.data['email'])
+
+        self.assertEqual(u.first_name, data['first_name'])
+        self.assertEqual(u.last_name, data['last_name'])
+        self.assertEqual(u.url, data['url'])
+        self.assertEqual(u.location, data['location'])
+
+    def test_update_profile_blank_ok(self):
+        data = {
+            "first_name": "Bruce",
+            "last_name": "Wayne",
+            "url": "http://darkknight.com/",
+            "location": "Gotham city"
+        }
+
+        # Update the model
+        u = CalendallUser.objects.get(email=self.data['email'])
+        u.first_name = data['first_name']
+        u.last_name = data['last_name']
+        u.url = data['url']
+        u.location = data['location']
+        u.save()
+
+        data_after = {
+            "first_name": "",
+            "last_name": "",
+            "url": "",
+            "location": ""
+        }
+
+        response = self.c.post(self.url, data_after)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, self.url)
+
+        u = CalendallUser.objects.get(email=self.data['email'])
+
+        self.assertEqual(u.first_name, "")
+        self.assertEqual(u.last_name, "")
+        self.assertEqual(u.url, "")
+        self.assertEqual(u.location, "")
+
+    def test_wrong_URL(self):
+
+        error = "Enter a valid URL."
+
+        wrong_urls = (
+            "http://darktknight",
+            "darkknight",
+            "http://darktk^night.com",
+        )
+
+        for u in wrong_urls:
+            response = self.c.post(self.url, {'url': u})
+            self.assertFormError(response, 'form', 'url', error)
+
+    def test_wrong_location(self):
+
+        error = "Ensure this value has at most 30 characters (it has {0})."
+
+        wrong_locations = (
+            "Gotham city is the best city!!!",
+            "Joker, listen this words, you're gonna get caught",
+            "Gotham city - Unitede States - Planet earth - Milky way - universe",
+        )
+
+        for l in wrong_locations:
+            response = self.c.post(self.url, {'location': l})
+            self.assertFormError(response, 'form', 'location',
+                                 error.format(len(l)))
+
+    def test_enter_settings_not_logged(self):
+
+        c = Client()
+
+        response = c.get(self.url)
+
+        query_string = "?next={0}".format(self.url)
+
+        self.assertRedirects(response, reverse("profiles:login")+query_string)
+        self.assertEqual(response.status_code, 302)
+
+        response = c.post(self.url, {})
+
+        self.assertRedirects(response, reverse("profiles:login")+query_string)
+        self.assertEqual(response.status_code, 302)

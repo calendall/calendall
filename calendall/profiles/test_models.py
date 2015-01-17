@@ -23,7 +23,9 @@ class CalendallUserTestCase(TestCase):
                 "reset_token": str(uuid.uuid4()).replace("-", ""),
                 "reset_expiration": timezone.now() + timedelta(minutes=20),
                 "validation_token": str(uuid.uuid4()).replace("-", ""),
-                "validated": False
+                "validated": False,
+                "url": "https://darkknight.com",
+                "location": "Gotham city",
             },
             {
                 "username": "Spiderman",
@@ -35,7 +37,9 @@ class CalendallUserTestCase(TestCase):
                 "reset_token": str(uuid.uuid4()).replace("-", ""),
                 "reset_expiration": timezone.now() + timedelta(minutes=20),
                 "validation_token": str(uuid.uuid4()).replace("-", ""),
-                "validated": True
+                "validated": True,
+                "url": "http://spiderstories.com",
+                "location": "NY",
             },
             {
                 "username": "ProfesorX",
@@ -47,8 +51,9 @@ class CalendallUserTestCase(TestCase):
                 "reset_token": str(uuid.uuid4()).replace("-", ""),
                 "reset_expiration": timezone.now() + timedelta(minutes=20),
                 "validation_token": str(uuid.uuid4()).replace("-", ""),
-                "validated": True
-
+                "validated": True,
+                "url": "http://www.mutantunited.net",
+                "location": "X Mansion",
             },
         ]
         for i in self.data:
@@ -83,13 +88,15 @@ class CalendallUserTestCase(TestCase):
             self.assertEqual(v.reset_expiration,
                              data[k].get('reset_expiration',
                                          self.data[k]['reset_expiration']))
-
             self.assertEqual(v.validated,
                              data[k].get('validated',
                                          self.data[k]['validated']))
             self.assertEqual(v.validation_token,
                              data[k].get('validation_token',
                                          self.data[k]['validation_token']))
+            self.assertEqual(v.url, data[k].get('url', self.data[k]['url']))
+            self.assertEqual(v.location, data[k].get('location',
+                             self.data[k]['location']))
 
     def test_save(self):
         """test save calendall user object"""

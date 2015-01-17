@@ -5,17 +5,20 @@ from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.core.urlresolvers import reverse_lazy
+from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.generic import CreateView, FormView, RedirectView
+from django.views.generic.edit import UpdateView
 
 from .models import CalendallUser
-from .forms import CalendallUserCreateForm, LoginForm
+from .forms import CalendallUserCreateForm, LoginForm, ProfileSettingsForm
 
 from core import utils
+from core.views import LoginRequiredMixin
 
 log = logging.getLogger(__name__)
 
@@ -100,7 +103,7 @@ class Login(FormView):
         return super().dispatch(request, *args, **kwargs)
 
 
-class Logout(RedirectView):
+class Logout(LoginRequiredMixin, RedirectView):
 
     url = settings.LOGIN_REDIRECT_URL
 
@@ -141,3 +144,19 @@ class Validate(RedirectView):
             messages.error(request, _("Error validating the account"))
 
         return super().get(request, *args, **kwargs)
+
+
+class ProfileSettings(LoginRequiredMixin, UpdateView):
+    model = CalendallUser
+    template_name_suffix = '_update_form'
+    form_class = ProfileSettingsForm
+    template_name = "profiles/profiles_profile_settings.html"
+    success_url = reverse_lazy('profiles:profile_settings')
+
+    # With this we don't need the pk in the url
+    def get_object(self):
+        return get_object_or_404(CalendallUser, pk=self.request.user.id)
+
+    def get_success_url(self):
+        messages.success(self.request, _("Profile updated"))
+        return super().get_success_url()
