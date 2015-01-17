@@ -18,6 +18,7 @@ from .models import CalendallUser
 from .forms import CalendallUserCreateForm, LoginForm, ProfileSettingsForm
 
 from core import utils
+from core.views import LoginRequiredMixin
 
 log = logging.getLogger(__name__)
 
@@ -102,7 +103,7 @@ class Login(FormView):
         return super().dispatch(request, *args, **kwargs)
 
 
-class Logout(RedirectView):
+class Logout(LoginRequiredMixin, RedirectView):
 
     url = settings.LOGIN_REDIRECT_URL
 
@@ -145,7 +146,7 @@ class Validate(RedirectView):
         return super().get(request, *args, **kwargs)
 
 
-class ProfileSettings(UpdateView):
+class ProfileSettings(LoginRequiredMixin, UpdateView):
     model = CalendallUser
     template_name_suffix = '_update_form'
     form_class = ProfileSettingsForm

@@ -554,3 +554,19 @@ class TestProfileSettings(TestCase):
             response = self.c.post(self.url, {'location': l})
             self.assertFormError(response, 'form', 'location',
                                  error.format(len(l)))
+
+    def test_enter_settings_not_logged(self):
+
+        c = Client()
+
+        response = c.get(self.url)
+
+        query_string = "?next={0}".format(self.url)
+
+        self.assertRedirects(response, reverse("profiles:login")+query_string)
+        self.assertEqual(response.status_code, 302)
+
+        response = c.post(self.url, {})
+
+        self.assertRedirects(response, reverse("profiles:login")+query_string)
+        self.assertEqual(response.status_code, 302)
