@@ -4,8 +4,7 @@ import uuid
 from django.conf import settings
 from django.core import mail
 from django.core.urlresolvers import reverse
-from django.test import Client
-from django.test import TestCase
+from django.test import Client, TestCase
 from django.test.utils import override_settings
 from django.utils.translation import ugettext_lazy as _
 import premailer
@@ -589,3 +588,19 @@ class TestProfileSettings(TestCase):
 
         self.assertRedirects(response, reverse("profiles:login")+query_string)
         self.assertEqual(response.status_code, 302)
+
+    def test_timezone_in_session(self):
+        data = {
+            "first_name": "Bruce",
+            "last_name": "Wayne",
+            "url": "http://darkknight.com/",
+            "location": "Gotham city",
+            "timezone": "America/New_York"
+        }
+
+        response = self.c.post(self.url, data)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, self.url)
+
+        self.assertEqual(response.client.session['user-tz'], data['timezone'])
