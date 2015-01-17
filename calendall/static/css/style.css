@@ -13,3 +13,9 @@ height: 55%!important;
 .field .label.small {
 font-size: 14px!important;
 }
+
+/* Small note description */
+.small-note {
+  margin: 0.5em 0px 0.5em;
+  color: rgba(0, 0, 0, 0.6);
+}

@@ -29,16 +29,26 @@
     <div class="right floated left aligned twelve wide column">
       <div class="ui top attached segment">
         <div class="ui hidden divider"></div>
-        <div class="ui hidden divider"></div>
          <div class="left aligned two column row">
             <div class="ui top big attached label">
               {% trans "Public profile" %}
             </div>
             <div class="column">
-                <div class="ui small header">{% trans "Profile picture "%}</div>
-                <img class="ui tiny rounded image" src="{% gravatar_url user.email 150 %}"/>
-                <div class="content">
-                  <a class="ui button" href="https://gravatar.com"> {% trans "Set new picture in gravatar" %}</a>
+                <div class="ui two column grid">
+                <div class="bottom aligned row">
+                  <div class="three wide column">
+                    <div class="ui small header">{% trans "Profile picture "%}</div>
+                    <img class="ui tiny rounded image" src="{% gravatar_url user.email 150 %}"/>
+                  </div>
+                  <div class="column">
+                    <a class="ui button" href="https://gravatar.com"> {% trans "Set new picture in gravatar" %}</a>
+                    <div class="small-note">
+                      {% blocktrans %}
+                      You will need a gravatar accout if you already don't have one
+                      {% endblocktrans%}
+                    </div>
+                  </div>
+                </div>
                 </div>
             </div>
           </div>
@@ -48,6 +58,7 @@
               <form accept-charset="UTF-8" action="{% url 'profiles:profile_settings' %}" class="ui fluid form" id="profile-settings-form" method="post">
 
                   {% csrf_token %}
+                  <!-------------- first and last name fields ---------------------->
                   <div class="field">
                     <label>{% trans "Name" %}</label>
                       <div class="ui field left input
