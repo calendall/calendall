@@ -63,7 +63,7 @@ class CalendallUserCreateForm(forms.ModelForm):
         password_verification = self.cleaned_data.get('password_verification', "")
 
         if password and password_verification and password != password_verification:
-            log.debug("password '{0}' and {1} differ".format(
+            log.debug("password '{0}' and '{1}'' differ".format(
                 password, password_verification))
 
             msg = _("doesn't match the confirmation")
@@ -87,9 +87,10 @@ class LoginForm(AuthenticationForm):
         super().__init__(*args, **kwargs)
         self.fields['username'].label = _("Username or Email")
 
-    # REimplement the login to allow email and username login
+    # Reimplement the login to allow email and username login
     def clean(self):
-        self.cleaned_data = super().clean()
+        # Don't do this because email is in the username field and will get error
+        # self.cleaned_data = super().clean()
         username_or_email = self.cleaned_data.get('username')
         password = self.cleaned_data.get('password')
         dont_check = False
@@ -155,8 +156,8 @@ class AccountSettingsForm(forms.ModelForm):
             label=_('Confirm new password'), max_length=128, required=True)
 
     def clean_new_password(self):
-        password = self.cleaned_data['new_password']
-        if not utils.valid_password(password):
+        password = self.cleaned_data.get('new_password', "")
+        if password and not utils.valid_password(password):
             msg = _("minimun 7 characters, one letter and one number")
             raise forms.ValidationError(msg)
 
@@ -164,24 +165,26 @@ class AccountSettingsForm(forms.ModelForm):
 
     def clean(self):
         self.cleaned_data = super().clean()
-        password = self.cleaned_data['password']
+        password = self.cleaned_data.get('password', "")
 
-        if not self.request.user.check_password(password):
-            msg = _("Old password isn't valid")
-            self.add_error('password', msg)
-            raise forms.ValidationError(msg)
+        if password:
+            if not self.request.user.check_password(password):
+                msg = _("Old password isn't valid")
+                self.add_error('password', msg)
+                raise forms.ValidationError(msg)
 
-        new_password = self.cleaned_data['new_password']
-        new_password_verification = self.cleaned_data['new_password_verification']
+            new_password = self.cleaned_data.get('new_password', "")
+            new_password_verification = self.cleaned_data.get(
+                'new_password_verification', "")
 
-        if new_password and new_password_verification and new_password != new_password_verification:
-            log.debug("new password '{0}' and {1} differ".format(
-                new_password, new_password_verification))
+            if new_password and new_password_verification and new_password != new_password_verification:
+                log.debug("new password '{0}' and '{1}' differ".format(
+                    new_password, new_password_verification))
 
-            msg = _("doesn't match the confirmation")
-            self.add_error('new_password', msg)
-            self.add_error('new_password_verification', msg)
-            raise forms.ValidationError(msg)
+                msg = _("doesn't match the confirmation")
+                self.add_error('new_password', msg)
+                self.add_error('new_password_verification', msg)
+                raise forms.ValidationError(msg)
 
         return self.cleaned_data
 

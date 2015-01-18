@@ -257,7 +257,7 @@ class TestLogin(TestCase):
         data = {
             'username': self.data['email'],
             'password': self.data['password'],
-            'next': "/"
+            'next': reverse("profiles:profile_settings")
         }
 
         response = c.post(self.url, data)
@@ -604,3 +604,109 @@ class TestProfileSettings(TestCase):
         self.assertRedirects(response, self.url)
 
         self.assertEqual(response.client.session['user-tz'], data['timezone'])
+
+
+@override_settings(DEBUG=True)
+class TestAccountSettings(TestCase):
+
+    def setUp(self):
+
+        self.url = reverse("profiles:account_settings")
+        self.data = {
+            'username': "batman",
+            'email': "darkknight@gmail.com",
+            'password': 'I\'mBatman123',
+        }
+
+        self.u = CalendallUser(**self.data)
+        self.u.set_password(self.data['password'])
+        self.u.save()
+
+        # Logged client for everyone
+        self.c = Client()
+        self.c.login(username=self.data['username'],
+                     password=self.data['password'])
+
+    def test_password_reset_ok(self):
+        new_passwords = (
+            "Darkknight5",
+            "0Riddler¿??¿¿",
+            "catwoman69",
+            "BoOm x3 Joker!",
+        )
+
+        previous_password = self.data['password']
+
+        for i in new_passwords:
+            data = {
+                'password': previous_password,
+                'new_password': i,
+                'new_password_verification': i,
+            }
+            response = self.c.post(self.url, data)
+            self.assertEqual(response.status_code, 302)
+            self.assertRedirects(response, self.url)
+            u = CalendallUser.objects.get(email=self.data['email'])
+            self.assertTrue(u.check_password(i))
+            previous_password = i
+
+    def test_password_reset_ok_continue_logged(self):
+        new_password = "Darkknight5",
+
+        data = {
+            'password': self.data['password'],
+            'new_password': new_password,
+            'new_password_verification': new_password,
+        }
+
+        self.assertEqual(self.c.session['_auth_user_id'], self.u.pk)
+        response = self.c.post(self.url, data)
+        self.assertEqual(response.client.session['_auth_user_id'], self.u.pk)
+
+    def test_password_reset_required_fields(self):
+        fields = ("password", "new_password", "new_password_verification")
+        error = "This field is required."
+
+        for i in fields:
+            response = self.c.post(self.url, {})
+
+            self.assertEqual(response.status_code, 200)
+            self.assertFormError(response, 'form', i, error)
+
+    def test_password_reset_old_wrong(self):
+        new_password = "Darkknight5"
+        data = {
+            'password': "notCorrectPassword",
+            'new_password': new_password,
+            'new_password_verification': new_password,
+        }
+
+        response = self.c.post(self.url, data)
+        self.assertEqual(response.status_code, 200)
+        self.assertFormError(response, 'form',
+                             "password", "Old password isn't valid")
+
+    def test_password_reset_new_verification_wrong(self):
+        data = {
+            'password': self.data['password'],
+            'new_password': "Darkknight5",
+            'new_password_verification': "not the same7",
+        }
+
+        response = self.c.post(self.url, data)
+        self.assertEqual(response.status_code, 200)
+        self.assertFormError(response, 'form',
+                             "new_password", "doesn't match the confirmation")
+
+    def test_password_reset_new_not_valid(self):
+        data = {
+            'password': self.data['password'],
+            'new_password': "Darkknight",
+            'new_password_verification': "Darkknight",
+        }
+
+        response = self.c.post(self.url, data)
+        self.assertEqual(response.status_code, 200)
+        self.assertFormError(response, 'form',
+                             "new_password",
+                             "minimun 7 characters, one letter and one number")
