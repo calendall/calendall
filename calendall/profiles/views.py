@@ -2,10 +2,10 @@ import logging
 import uuid
 
 from django.conf import settings
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import (authenticate, login, logout,
+                                 update_session_auth_hash)
 from django.contrib import messages
 from django.core.urlresolvers import reverse_lazy
-from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.debug import sensitive_post_parameters
@@ -15,7 +15,8 @@ from django.views.generic import CreateView, FormView, RedirectView
 from django.views.generic.edit import UpdateView
 
 from .models import CalendallUser
-from .forms import CalendallUserCreateForm, LoginForm, ProfileSettingsForm
+from .forms import (CalendallUserCreateForm, LoginForm, ProfileSettingsForm,
+                    AccountSettingsForm)
 
 from core import utils
 from core.views import LoginRequiredMixin
@@ -148,14 +149,13 @@ class Validate(RedirectView):
 
 class ProfileSettings(LoginRequiredMixin, UpdateView):
     model = CalendallUser
-    template_name_suffix = '_update_form'
     form_class = ProfileSettingsForm
     template_name = "profiles/profiles_profile_settings.html"
     success_url = reverse_lazy('profiles:profile_settings')
 
     # With this we don't need the pk in the url
     def get_object(self):
-        return get_object_or_404(CalendallUser, pk=self.request.user.id)
+        return self.request.user
 
     def form_valid(self, form):
         # Set the timezone of the user in the session
@@ -165,3 +165,31 @@ class ProfileSettings(LoginRequiredMixin, UpdateView):
     def get_success_url(self):
         messages.success(self.request, _("Profile updated"))
         return super().get_success_url()
+
+
+class AccountSettings(LoginRequiredMixin, UpdateView):
+    model = CalendallUser
+    form_class = AccountSettingsForm
+    template_name = "profiles/profiles_account_settings.html"
+    success_url = reverse_lazy('profiles:account_settings')
+
+    # we need request in the form
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
+
+    def form_valid(self, form):
+        result = super().form_valid(form)
+        # Don't logout the user (>= 1.7)
+        update_session_auth_hash(self.request, self.request.user)
+        return result
+
+    # With this we don't need the pk in the url
+    def get_object(self):
+        return self.request.user
+
+    def get_success_url(self):
+        messages.success(self.request, _("Account updated"))
+        return super().get_success_url()
+

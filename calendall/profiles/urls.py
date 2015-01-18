@@ -11,7 +11,10 @@ urlpatterns = patterns('',
     url(r'^validate/(?P<username>[a-zA-Z0-9\-]{1,30})/(?P<token>[a-f0-9]{32})$',
         views.Validate.as_view(), name="validate"),
 
+    # Settings
     url(r'^settings/profile$', views.ProfileSettings.as_view(),
         name="profile_settings"),
+    url(r'^settings/account$', views.AccountSettings.as_view(),
+        name="account_settings"),
 
 )

@@ -11,19 +11,7 @@
 
   <div class="ui row">
     <div class="four wide column">
-      <div class="ui vertical menu">
-        <div class="big header item">
-           {% trans "Personal settings" %}
-        </div>
-
-        <a class="active item">
-          {% trans "Profile" %}
-        </a>
-        <a class="item">
-          {% trans "Account settings" %}
-        </a>
-      </div>
-
+    {% include "profiles/profiles_include_settings_menu.html" with current="profile" %}
     </div>
 
     <div class="right floated left aligned twelve wide column">
