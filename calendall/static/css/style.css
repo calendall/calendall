@@ -20,6 +20,8 @@ font-size: 14px!important;
   color: rgba(0, 0, 0, 0.6);
 }
 
-.ui.form .field > .selection.dropdown, .ui.form.settings input[type="text"] {
+.ui.form .field > .selection.dropdown,
+.ui.form.settings input[type="text"],
+.ui.form.settings input[type="password"] {
     width: 350px;
 }
