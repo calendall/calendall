@@ -1,0 +1,16 @@
+{% load i18n %}
+
+
+<div class="ui vertical menu">
+  <div class="big header item">
+     {% trans "Personal settings" %}
+  </div>
+
+  <a class="{% if current == "profile" %}active{% endif %} item" href="{% url "profiles:profile_settings" %}">
+    {% trans "Profile" %}
+  </a>
+
+  <a class="{% if current == "account" %}active{% endif %} item" href="{% url "profiles:account_settings" %}">
+    {% trans "Account" %}
+  </a>
+</div>
