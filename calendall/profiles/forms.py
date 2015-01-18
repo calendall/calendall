@@ -58,6 +58,7 @@ class CalendallUserCreateForm(forms.ModelForm):
         return password
 
     def clean(self):
+        self.cleaned_data = super().clean()
         password = self.cleaned_data.get('password', "")
         password_verification = self.cleaned_data.get('password_verification', "")
 
@@ -88,6 +89,7 @@ class LoginForm(AuthenticationForm):
 
     # REimplement the login to allow email and username login
     def clean(self):
+        self.cleaned_data = super().clean()
         username_or_email = self.cleaned_data.get('username')
         password = self.cleaned_data.get('password')
         dont_check = False
@@ -134,3 +136,58 @@ class ProfileSettingsForm(forms.ModelForm):
         self.fields['url'].label = _("URL")
         self.fields['location'].label = _("Location")
         self.fields['timezone'].help_text = _("Select timezone")
+
+
+class AccountSettingsForm(forms.ModelForm):
+
+    class Meta:
+        model = CalendallUser
+        fields = ["password"]
+
+    def __init__(self, request, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.request = request
+        self.fields['password'].label = _("Old password")
+        self.fields['password'].required = True
+        self.fields['new_password'] = forms.CharField(
+            label=_('New password'), max_length=128, required=True)
+        self.fields['new_password_verification'] = forms.CharField(
+            label=_('Confirm new password'), max_length=128, required=True)
+
+    def clean_new_password(self):
+        password = self.cleaned_data['new_password']
+        if not utils.valid_password(password):
+            msg = _("minimun 7 characters, one letter and one number")
+            raise forms.ValidationError(msg)
+
+        return password
+
+    def clean(self):
+        self.cleaned_data = super().clean()
+        password = self.cleaned_data['password']
+
+        if not self.request.user.check_password(password):
+            msg = _("Old password isn't valid")
+            self.add_error('password', msg)
+            raise forms.ValidationError(msg)
+
+        new_password = self.cleaned_data['new_password']
+        new_password_verification = self.cleaned_data['new_password_verification']
+
+        if new_password and new_password_verification and new_password != new_password_verification:
+            log.debug("new password '{0}' and {1} differ".format(
+                new_password, new_password_verification))
+
+            msg = _("doesn't match the confirmation")
+            self.add_error('new_password', msg)
+            self.add_error('new_password_verification', msg)
+            raise forms.ValidationError(msg)
+
+        return self.cleaned_data
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.set_password(self.cleaned_data["new_password"])
+        if commit:
+            user.save()
+        return user
