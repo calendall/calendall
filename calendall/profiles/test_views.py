@@ -639,9 +639,9 @@ class TestAccountSettings(TestCase):
 
         for i in new_passwords:
             data = {
-                'password': previous_password,
-                'new_password': i,
-                'new_password_verification': i,
+                'old_password': previous_password,
+                'password': i,
+                'password_verification': i,
             }
             response = self.c.post(self.url, data)
             self.assertEqual(response.status_code, 302)
@@ -654,9 +654,9 @@ class TestAccountSettings(TestCase):
         new_password = "Darkknight5",
 
         data = {
-            'password': self.data['password'],
-            'new_password': new_password,
-            'new_password_verification': new_password,
+            'old_password': self.data['password'],
+            'password': new_password,
+            'password_verification': new_password,
         }
 
         self.assertEqual(self.c.session['_auth_user_id'], self.u.pk)
@@ -664,7 +664,7 @@ class TestAccountSettings(TestCase):
         self.assertEqual(response.client.session['_auth_user_id'], self.u.pk)
 
     def test_password_reset_required_fields(self):
-        fields = ("password", "new_password", "new_password_verification")
+        fields = ("old_password", "password", "password_verification")
         error = "This field is required."
 
         for i in fields:
@@ -676,37 +676,37 @@ class TestAccountSettings(TestCase):
     def test_password_reset_old_wrong(self):
         new_password = "Darkknight5"
         data = {
-            'password': "notCorrectPassword",
-            'new_password': new_password,
-            'new_password_verification': new_password,
+            'old_password': "notCorrectPassword7",
+            'password': new_password,
+            'password_verification': new_password,
         }
 
         response = self.c.post(self.url, data)
         self.assertEqual(response.status_code, 200)
         self.assertFormError(response, 'form',
-                             "password", "Old password isn't valid")
+                             "old_password", "Old password isn't valid")
 
     def test_password_reset_new_verification_wrong(self):
         data = {
-            'password': self.data['password'],
-            'new_password': "Darkknight5",
-            'new_password_verification': "not the same7",
+            'old_password': self.data['password'],
+            'password': "Darkknight5",
+            'password_verification': "not the same7",
         }
 
         response = self.c.post(self.url, data)
         self.assertEqual(response.status_code, 200)
         self.assertFormError(response, 'form',
-                             "new_password", "doesn't match the confirmation")
+                             "password", "doesn't match the confirmation")
 
     def test_password_reset_new_not_valid(self):
         data = {
-            'password': self.data['password'],
-            'new_password': "Darkknight",
-            'new_password_verification': "Darkknight",
+            'old_password': self.data['password'],
+            'password': "Darkknight",
+            'password_verification': "Darkknight",
         }
 
         response = self.c.post(self.url, data)
         self.assertEqual(response.status_code, 200)
         self.assertFormError(response, 'form',
-                             "new_password",
+                             "password",
                              "minimun 7 characters, one letter and one number")

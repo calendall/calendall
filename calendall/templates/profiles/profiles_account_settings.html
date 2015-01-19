@@ -40,6 +40,20 @@
 
                   {% csrf_token %}
                   <!-------------- Old password ---------------------->
+                  <div class="ui field input {% if form.old_password.errors %} error {% endif %}">
+                    <label>{{ form.old_password.label }}</label>
+                    <input id="{{ form.old_password.auto_id }}"
+                            name="{{ form.old_password.name }}"
+                            type="password"
+                            value="">
+                     {% if form.old_password.errors %}
+                         <div class="ui red pointing left small label transition visible">
+                           {% join_strings form.old_password.errors " and " ", " %}
+                         </div>
+                     {% endif %}
+                 </div>
+
+                  <!-------------- New password ---------------------->
                   <div class="ui field input {% if form.password.errors %} error {% endif %}">
                     <label>{{ form.password.label }}</label>
                     <input id="{{ form.password.auto_id }}"
@@ -53,30 +67,16 @@
                      {% endif %}
                  </div>
 
-                  <!-------------- New password ---------------------->
-                  <div class="ui field input {% if form.new_password.errors %} error {% endif %}">
-                    <label>{{ form.new_password.label }}</label>
-                    <input id="{{ form.new_password.auto_id }}"
-                            name="{{ form.new_password.name }}"
-                            type="password"
-                            value="">
-                     {% if form.new_password.errors %}
-                         <div class="ui red pointing left small label transition visible">
-                           {% join_strings form.new_password.errors " and " ", " %}
-                         </div>
-                     {% endif %}
-                 </div>
-
                   <!-------------- New password validation---------------------->
-                  <div class="ui field input {% if form.new_password_verification.errors %} error {% endif %}">
-                    <label>{{ form.new_password_verification.label }}</label>
-                    <input id="{{ form.new_password_verification.auto_id }}"
-                            name="{{ form.new_password_verification.name }}"
+                  <div class="ui field input {% if form.password_verification.errors %} error {% endif %}">
+                    <label>{{ form.password_verification.label }}</label>
+                    <input id="{{ form.password_verification.auto_id }}"
+                            name="{{ form.password_verification.name }}"
                             type="password"
                             value="">
-                     {% if form.new_password_verification.errors %}
+                     {% if form.password_verification.errors %}
                          <div class="ui red pointing left small label transition visible">
-                           {% join_strings form.new_password_verification.errors " and " ", " %}
+                           {% join_strings form.password_verification.errors " and " ", " %}
                          </div>
                      {% endif %}
                  </div>
