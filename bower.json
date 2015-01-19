@@ -5,6 +5,7 @@
     "jquery": "~2.1.3",
     "semantic": "~1.6.2",
     "transactional-email-templates": "mailgun/transactional-email-templates",
+    "font-awesome": "~4.2.0",
     "sticky-footer": "https://github.com/cferdinandi/sticky-footer.git"
   }
 }
