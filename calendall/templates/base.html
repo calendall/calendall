@@ -25,6 +25,7 @@
 
   </head>
   <body>
+  <div class="page-wrapper" data-sticky-wrap>
     <div class="ui main menu">
       <div class="ui container">
           <div class="title item">
@@ -68,22 +69,50 @@
   </div>
 
   <div class="ui page grid">
-
-  {% if messages %}
-  <div class="ui centered column grid">
-      {% for message in messages %}
-      <div claa="ui row">
-      <div class="ui {{ message|message_css_class }} message">
-          <i class="close icon"></i>
-          <p>{{ message }}</p>
+      {% if messages %}
+      <div class="ui centered column grid">
+          {% for message in messages %}
+          <div claa="ui row">
+          <div class="ui {{ message|message_css_class }} message">
+              <i class="close icon"></i>
+              <p>{{ message }}</p>
+          </div>
+          {% endfor %}
       </div>
-      {% endfor %}
+      {% endif %}
+        {% block content %}
+        {% endblock content %}
+      </div>
   </div>
-  {% endif %}
+</div> <!-- Page-wrapper -->
 
-
-
-    {% block content %}
-    {% endblock content %}
+  <div data-sticky-footer class="footer">
+    <div class="container">
+      <div class="ui stackable divided relaxed grid">
+        <div class="eight wide column">
+          <h3 class="ui header">{% trans "Do you like Calendall?" %}</h3>
+          <p>
+            {% blocktrans %}
+            Calendall is made in the free time of one person (for now), share it with your friends, family and everyone that want's free public cummunity driven calendars and support us! :)
+            {% endblocktrans %}
+          </p>
+        </div>
+        <div class="four wide column">
+          <h5 class="ui header">{% trans "Contribute" %}</h5>
+          <div class="ui link list">
+            <a class="item" href="https://github.com/calendall" target="_blank">{% trans "Source code" %}</a>
+            <a class="item" href="https://www.transifex.com/projects/p/calendall/" target="_blank">{% trans "Translation Hub" %}</a>
+            <a class="item" href="https://github.com/calendall/issues" target="_blank">{% trans "Issue Tracker" %}</a>
+          </div>
+        </div>
+        <div class="four wide column">
+          <h5 class="ui header">{% trans "Calendall stuff" %}</h5>
+          <div class="ui link list">
+            <a class="item disabled" href="">{% trans "About us" %}</a>
+            <a class="item disabled" href="">{% trans "Next steps" %}</a>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </html>

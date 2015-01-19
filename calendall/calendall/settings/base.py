@@ -93,6 +93,7 @@ PIPELINE_CSS = {
     'base-libs': {
         'source_filenames': (
             'bower/semantic/dist/semantic.css',
+            'bower/font-awesome/css/font-awesome.css'
         ),
         'output_filename': 'css/base-libs.min.css',
     },
@@ -117,6 +118,7 @@ PIPELINE_JS = {
         'source_filenames': (
             'bower/jquery/dist/jquery.js',
             'bower/semantic/dist/semantic.js',
+            'bower/sticky-footer/dist/js/sticky-footer.js',
         ),
         'output_filename': 'js/base-libs.min.js',
     },

@@ -25,3 +25,15 @@ font-size: 14px!important;
 .ui.form.settings input[type="password"] {
     width: 350px;
 }
+
+.corporative{
+    background-color: #88C9F0;
+}
+.page-wrapper{
+margin-bottom: 20px;
+}
+.footer {
+    padding-top:30px;
+    background-color: #88C9F0;
+    height: 150px;
+}
