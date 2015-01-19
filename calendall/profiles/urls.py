@@ -17,4 +17,10 @@ urlpatterns = patterns('',
     url(r'^settings/account$', views.AccountSettings.as_view(),
         name="account_settings"),
 
+    # Password reset
+    url(r'^ask/password/reset$', views.AskPasswordReset.as_view(),
+        name="ask_password_reset"),
+    url(r'^password/reset/(?P<username>[a-zA-Z0-9\-]{1,30})/(?P<token>[a-f0-9]{32})$',
+        views.PasswordReset.as_view(),
+        name="password_reset"),
 )

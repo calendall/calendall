@@ -710,3 +710,52 @@ class TestAccountSettings(TestCase):
         self.assertFormError(response, 'form',
                              "password",
                              "minimun 7 characters, one letter and one number")
+
+
+@override_settings(DEBUG=True,
+                   EMAIL_BACKEND=settings.TEST_EMAIL_BACKEND)
+class TestAskPasswordReset(TestCase):
+
+    def setUp(self):
+
+        self.url = reverse("profiles:ask_password_reset")
+        self.data = {
+            'username': "batman",
+            'email': "darkknight@gmail.com",
+            'password': 'I\'mBatman123',
+        }
+
+        self.u = CalendallUser(**self.data)
+        self.u.set_password(self.data['password'])
+        self.u.save()
+
+        self.c = Client()
+
+    @mock.patch.object(premailer.Premailer, '_load_external',
+                       side_effect=local_url_loader)
+    def test_ask_reset_ok(self, mock_method):
+        response = self.c.post(self.url, {'email': self.data['email']})
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse("profiles:login"))
+
+        # Check email
+
+        self.assertEqual(mail.outbox[0].recipients()[0], self.u.email)
+        self.assertEqual(mail.outbox[0].subject, _("Please reset your password"))
+
+        self.assertEqual(len(mail.outbox), 1)
+
+    def test_required_fields(self):
+        response = self.c.post(self.url, {})
+        self.assertEqual(response.status_code, 200)
+        self.assertFormError(response, 'form',
+                             "email",
+                             "This field is required.")
+
+    def test_email_doesnt_exists(self):
+        response = self.c.post(self.url, {'email': "wrong@email.com"})
+        self.assertEqual(response.status_code, 200)
+        self.assertFormError(response, 'form',
+                             "email",
+                             "Can't find that email, sorry")

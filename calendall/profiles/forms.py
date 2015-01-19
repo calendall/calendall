@@ -184,3 +184,22 @@ class AccountSettingsForm(NewPasswordMixin, forms.ModelForm):
         self.cleaned_data = super().clean()
 
         return self.cleaned_data
+
+
+class AskPasswordResetForm(forms.ModelForm):
+
+    class Meta:
+        model = CalendallUser
+        fields = ["email"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['email'].required = True
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email', "")
+        if not utils.email_exists(email):
+            log.debug("error reseting password for: {0}".format(email))
+            raise forms.ValidationError(_("Can't find that email, sorry"))
+
+        return email

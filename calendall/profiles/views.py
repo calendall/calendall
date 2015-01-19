@@ -6,6 +6,7 @@ from django.contrib.auth import (authenticate, login, logout,
                                  update_session_auth_hash)
 from django.contrib import messages
 from django.core.urlresolvers import reverse_lazy
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.debug import sensitive_post_parameters
@@ -14,9 +15,10 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.generic import CreateView, FormView, RedirectView
 from django.views.generic.edit import UpdateView
 
+from .utils import email_exists
 from .models import CalendallUser
 from .forms import (CalendallUserCreateForm, LoginForm, ProfileSettingsForm,
-                    AccountSettingsForm)
+                    AccountSettingsForm, AskPasswordResetForm)
 
 from core import utils
 from core.views import LoginRequiredMixin
@@ -193,3 +195,53 @@ class AccountSettings(LoginRequiredMixin, UpdateView):
         messages.success(self.request, _("Account updated"))
         return super().get_success_url()
 
+
+class AskPasswordReset(FormView):
+
+    form_class = AskPasswordResetForm
+    template_name = "profiles/profiles_ask_password_reset.html"
+    success_url = settings.LOGIN_REDIRECT_URL
+
+    # Prepopulate the login if logged
+    def get_initial(self):
+        initial_data = super().get_initial()
+        try:
+            initial_data['email'] = self.request.user.email
+        except AttributeError:
+            pass  # anonymous user
+
+        return initial_data
+
+    def form_valid(self, form):
+        if email_exists(form.cleaned_data['email']):
+            # Get user
+            context_data = self.get_context_data()
+            u = CalendallUser.objects.get(
+                email=form.cleaned_data['email'])
+
+            # Create the token & date
+            u.reset_token = str(uuid.uuid4()).replace("-", "")
+            u.reset_expiration = timezone.now()
+            u.save()
+            context_data['user'] = u
+
+            # Send email
+            utils.send_templated_email("profiles/emails/profiles_email_password_reset",
+                                       context_data,
+                                       _("Please reset your password"),
+                                       settings.EMAIL_NOREPLY,
+                                       (form.cleaned_data['email'],),
+                                       self.request)
+
+            messages.success(self.request, _("Email sent with the instructions"))
+        else:
+            messages.error(self.request, _("Error resettings password process"))
+
+        return super().form_valid(form)
+
+
+class PasswordReset(FormView):
+
+    form_class = AskPasswordResetForm
+    template_name = "profiles/profiles_ask_password_reset.html"
+    success_url = settings.LOGIN_REDIRECT_URL
