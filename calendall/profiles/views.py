@@ -213,29 +213,27 @@ class AskPasswordReset(FormView):
         return initial_data
 
     def form_valid(self, form):
-        if email_exists(form.cleaned_data['email']):
-            # Get user
-            context_data = self.get_context_data()
-            u = CalendallUser.objects.get(
-                email=form.cleaned_data['email'])
 
-            # Create the token & date
-            u.reset_token = str(uuid.uuid4()).replace("-", "")
-            u.reset_expiration = timezone.now()
-            u.save()
-            context_data['user'] = u
+        # Get user
+        context_data = self.get_context_data()
+        u = CalendallUser.objects.get(
+            email=form.cleaned_data['email'])
 
-            # Send email
-            utils.send_templated_email("profiles/emails/profiles_email_password_reset",
-                                       context_data,
-                                       _("Please reset your password"),
-                                       settings.EMAIL_NOREPLY,
-                                       (form.cleaned_data['email'],),
-                                       self.request)
+        # Create the token & date
+        u.reset_token = str(uuid.uuid4()).replace("-", "")
+        u.reset_expiration = timezone.now()
+        u.save()
+        context_data['user'] = u
 
-            messages.success(self.request, _("Email sent with the instructions"))
-        else:
-            messages.error(self.request, _("Error resettings password process"))
+        # Send email
+        utils.send_templated_email("profiles/emails/profiles_email_password_reset",
+                                   context_data,
+                                   _("Please reset your password"),
+                                   settings.EMAIL_NOREPLY,
+                                   (form.cleaned_data['email'],),
+                                   self.request)
+
+        messages.success(self.request, _("Email sent with the instructions"))
 
         return super().form_valid(form)
 

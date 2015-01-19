@@ -673,6 +673,20 @@ class TestAccountSettings(TestCase):
             self.assertEqual(response.status_code, 200)
             self.assertFormError(response, 'form', i, error)
 
+    def test_password_reset_old_not_valid(self):
+        new_password = "Darkknight5"
+        data = {
+            'old_password': "notCorrectPassword",
+            'password': new_password,
+            'password_verification': new_password,
+        }
+
+        response = self.c.post(self.url, data)
+        self.assertEqual(response.status_code, 200)
+        self.assertFormError(response, 'form',
+                             "old_password",
+                             "minimun 7 characters, one letter and one number")
+
     def test_password_reset_old_wrong(self):
         new_password = "Darkknight5"
         data = {
