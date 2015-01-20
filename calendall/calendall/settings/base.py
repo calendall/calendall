@@ -125,6 +125,7 @@ PIPELINE_JS = {
     'calendall-js': {
         'source_filenames': (
             'js/semantic-actions.js',
+            'js/other-actions.js',
         ),
         'output_filename': 'js/calendall.min.js',
     }
