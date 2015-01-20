@@ -203,3 +203,10 @@ class AskPasswordResetForm(forms.ModelForm):
             raise forms.ValidationError(_("Can't find that email, sorry"))
 
         return email
+
+
+class PasswordResetForm(NewPasswordMixin, forms.ModelForm):
+
+    class Meta:
+        model = CalendallUser
+        fields = ["password"]

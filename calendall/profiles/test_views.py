@@ -773,3 +773,43 @@ class TestAskPasswordReset(TestCase):
         self.assertFormError(response, 'form',
                              "email",
                              "Can't find that email, sorry")
+
+
+@override_settings(DEBUG=True)
+class TestPasswordReset(TestCase):
+
+    def setUp(self):
+
+        self.url = reverse("profiles:ask_password_reset")
+        self.data = {
+            'username': "batman",
+            'email': "darkknight@gmail.com",
+            'password': 'I\'mBatman123',
+        }
+
+        self.u = CalendallUser(**self.data)
+        self.u.set_password(self.data['password'])
+        self.u.save()
+
+        self.c = Client()
+
+    def test_password_reset_ok(self):
+        pass
+
+    def test_password_reset_wrong_by_token(self):
+        pass
+
+    def test_password_reset_wrong_by_user(self):
+        pass
+
+    def test_password_reset_wrong_by_expire(self):
+        pass
+
+    def test_password_reset_required_fields(self):
+        pass
+
+    def test_password_reset_password_invalid(self):
+        pass
+
+    def test_password_reset_password_validation_invalid(self):
+        pass

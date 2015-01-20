@@ -1,3 +1,4 @@
+from datetime import timedelta
 import logging
 import uuid
 
@@ -6,6 +7,7 @@ from django.contrib.auth import (authenticate, login, logout,
                                  update_session_auth_hash)
 from django.contrib import messages
 from django.core.urlresolvers import reverse_lazy
+from django.shortcuts import redirect
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
@@ -15,10 +17,10 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.generic import CreateView, FormView, RedirectView
 from django.views.generic.edit import UpdateView
 
-from .utils import email_exists
 from .models import CalendallUser
 from .forms import (CalendallUserCreateForm, LoginForm, ProfileSettingsForm,
-                    AccountSettingsForm, AskPasswordResetForm)
+                    AccountSettingsForm, AskPasswordResetForm,
+                    PasswordResetForm)
 
 from core import utils
 from core.views import LoginRequiredMixin
@@ -221,7 +223,11 @@ class AskPasswordReset(FormView):
 
         # Create the token & date
         u.reset_token = str(uuid.uuid4()).replace("-", "")
-        u.reset_expiration = timezone.now()
+        expiration_time = timezone.now()
+        # Add expiration  time
+        u.reset_expiration = expiration_time + timedelta(
+            seconds=settings.PASSWORD_RESET_MAX_SECONDS)
+
         u.save()
         context_data['user'] = u
 
@@ -238,8 +244,37 @@ class AskPasswordReset(FormView):
         return super().form_valid(form)
 
 
-class PasswordReset(FormView):
+class PasswordReset(UpdateView):
 
-    form_class = AskPasswordResetForm
-    template_name = "profiles/profiles_ask_password_reset.html"
+    model = CalendallUser
+    form_class = PasswordResetForm
+    template_name = "profiles/profiles_password_reset.html"
     success_url = settings.LOGIN_REDIRECT_URL
+    validation_error_url = reverse_lazy("profiles:ask_password_reset")
+
+    def dispatch(self, request, *args, **kwargs):
+        username = self.kwargs.get('username', "")
+        token = self.kwargs.get('token', "")
+        self.user = CalendallUser.objects.get(username=username)
+        # First check the token is ok
+        if token == self.user.reset_token and\
+           self.user.reset_expiration >= timezone.now():
+            return super().dispatch(request, *args, **kwargs)
+
+        log.debug("Error resettings password for: {0}".format(self.user.email))
+        messages.error(self.request, _("It looks like you clicked on an invalid password reset link or it expired. Please try again."))
+        return redirect(self.validation_error_url)
+
+    # With this we don't need the pk in the url
+    def get_object(self):
+        return self.user
+
+    def form_valid(self, form):
+        # Don't allow reset again
+        self.user.reset_token = ""
+        self.user.save()
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        messages.success(self.request, _("Account updated"))
+        return super().get_success_url()
