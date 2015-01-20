@@ -1,3 +1,4 @@
+from datetime import timedelta
 from unittest import mock
 import uuid
 
@@ -6,6 +7,7 @@ from django.core import mail
 from django.core.urlresolvers import reverse
 from django.test import Client, TestCase
 from django.test.utils import override_settings
+from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 import premailer
 
@@ -639,9 +641,9 @@ class TestAccountSettings(TestCase):
 
         for i in new_passwords:
             data = {
-                'password': previous_password,
-                'new_password': i,
-                'new_password_verification': i,
+                'old_password': previous_password,
+                'password': i,
+                'password_verification': i,
             }
             response = self.c.post(self.url, data)
             self.assertEqual(response.status_code, 302)
@@ -654,9 +656,9 @@ class TestAccountSettings(TestCase):
         new_password = "Darkknight5",
 
         data = {
-            'password': self.data['password'],
-            'new_password': new_password,
-            'new_password_verification': new_password,
+            'old_password': self.data['password'],
+            'password': new_password,
+            'password_verification': new_password,
         }
 
         self.assertEqual(self.c.session['_auth_user_id'], self.u.pk)
@@ -664,7 +666,7 @@ class TestAccountSettings(TestCase):
         self.assertEqual(response.client.session['_auth_user_id'], self.u.pk)
 
     def test_password_reset_required_fields(self):
-        fields = ("password", "new_password", "new_password_verification")
+        fields = ("old_password", "password", "password_verification")
         error = "This field is required."
 
         for i in fields:
@@ -673,40 +675,227 @@ class TestAccountSettings(TestCase):
             self.assertEqual(response.status_code, 200)
             self.assertFormError(response, 'form', i, error)
 
+    def test_password_reset_old_not_valid(self):
+        new_password = "Darkknight5"
+        data = {
+            'old_password': "notCorrectPassword",
+            'password': new_password,
+            'password_verification': new_password,
+        }
+
+        response = self.c.post(self.url, data)
+        self.assertEqual(response.status_code, 200)
+        self.assertFormError(response, 'form',
+                             "old_password",
+                             "minimun 7 characters, one letter and one number")
+
     def test_password_reset_old_wrong(self):
         new_password = "Darkknight5"
         data = {
-            'password': "notCorrectPassword",
-            'new_password': new_password,
-            'new_password_verification': new_password,
+            'old_password': "notCorrectPassword7",
+            'password': new_password,
+            'password_verification': new_password,
         }
 
         response = self.c.post(self.url, data)
         self.assertEqual(response.status_code, 200)
         self.assertFormError(response, 'form',
-                             "password", "Old password isn't valid")
+                             "old_password", "Old password isn't valid")
 
     def test_password_reset_new_verification_wrong(self):
         data = {
-            'password': self.data['password'],
-            'new_password': "Darkknight5",
-            'new_password_verification': "not the same7",
+            'old_password': self.data['password'],
+            'password': "Darkknight5",
+            'password_verification': "not the same7",
         }
 
         response = self.c.post(self.url, data)
         self.assertEqual(response.status_code, 200)
         self.assertFormError(response, 'form',
-                             "new_password", "doesn't match the confirmation")
+                             "password", "doesn't match the confirmation")
 
     def test_password_reset_new_not_valid(self):
         data = {
-            'password': self.data['password'],
-            'new_password': "Darkknight",
-            'new_password_verification': "Darkknight",
+            'old_password': self.data['password'],
+            'password': "Darkknight",
+            'password_verification': "Darkknight",
         }
 
         response = self.c.post(self.url, data)
         self.assertEqual(response.status_code, 200)
         self.assertFormError(response, 'form',
-                             "new_password",
+                             "password",
+                             "minimun 7 characters, one letter and one number")
+
+
+@override_settings(DEBUG=True,
+                   EMAIL_BACKEND=settings.TEST_EMAIL_BACKEND)
+class TestAskPasswordReset(TestCase):
+
+    def setUp(self):
+
+        self.url = reverse("profiles:ask_password_reset")
+        self.data = {
+            'username': "batman",
+            'email': "darkknight@gmail.com",
+            'password': 'I\'mBatman123',
+        }
+
+        self.u = CalendallUser(**self.data)
+        self.u.set_password(self.data['password'])
+        self.u.save()
+
+        self.c = Client()
+
+    @mock.patch.object(premailer.Premailer, '_load_external',
+                       side_effect=local_url_loader)
+    def test_ask_reset_ok(self, mock_method):
+        response = self.c.post(self.url, {'email': self.data['email']})
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse("profiles:login"))
+
+        # Check email
+
+        self.assertEqual(mail.outbox[0].recipients()[0], self.u.email)
+        self.assertEqual(mail.outbox[0].subject, _("Please reset your password"))
+
+        self.assertEqual(len(mail.outbox), 1)
+
+    def test_required_fields(self):
+        response = self.c.post(self.url, {})
+        self.assertEqual(response.status_code, 200)
+        self.assertFormError(response, 'form',
+                             "email",
+                             "This field is required.")
+
+    def test_email_doesnt_exists(self):
+        response = self.c.post(self.url, {'email': "wrong@email.com"})
+        self.assertEqual(response.status_code, 200)
+        self.assertFormError(response, 'form',
+                             "email",
+                             "Can't find that email, sorry")
+
+
+@override_settings(DEBUG=True)
+class TestPasswordReset(TestCase):
+
+    def setUp(self):
+        self.data = {
+            'username': "batman",
+            'email': "darkknight@gmail.com",
+            'password': 'I\'mBatman123',
+            'reset_token': str(uuid.uuid4()).replace("-", ""),
+            'reset_expiration': timezone.now() + timedelta(seconds=10)
+        }
+
+        self.u = CalendallUser(**self.data)
+        self.u.set_password(self.data['password'])
+        self.u.save()
+
+        self.c = Client()
+
+        url_data = {
+            'username': self.u.username,
+            'token': self.u.reset_token
+        }
+        self.url = reverse("profiles:password_reset", kwargs=url_data)
+
+    def test_password_reset_ok(self):
+        new_password = "NewBatmanPassword99"
+        data = {
+            'password': new_password,
+            'password_verification': new_password,
+        }
+
+        response = self.c.post(self.url, data)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse("profiles:login"))
+
+        # self.u.refresh_from_db() # Wait to Dajngo 1.8
+        u = CalendallUser.objects.get(id=self.u.id)
+        self.assertTrue(u.check_password(new_password))
+
+    def test_password_reset_wrong_by_token(self):
+        url_data = {
+            'username': self.u.username,
+            'token': str(uuid.uuid4()).replace("-", "")
+        }
+        self.url = reverse("profiles:password_reset", kwargs=url_data)
+
+        response = self.c.post(self.url, {})
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse("profiles:ask_password_reset"))
+
+    def test_password_reset_wrong_by_user(self):
+        url_data = {
+            'username': "notBatman",
+            'token': self.u.reset_token
+        }
+        self.url = reverse("profiles:password_reset", kwargs=url_data)
+
+        response = self.c.post(self.url, {})
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse("profiles:ask_password_reset"))
+
+    def test_password_reset_wrong_by_expire(self):
+        expiration = timezone.now() - timedelta(seconds=1)
+        self.u.reset_expiration = expiration
+        self.u.save()
+
+        new_password = "NewBatmanPassword99"
+        data = {
+            'password': new_password,
+            'password_verification': new_password,
+        }
+
+        response = self.c.post(self.url, data)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse("profiles:ask_password_reset"))
+
+    def test_password_reset_required_fields(self):
+
+        new_password = "NewBatmanPassword99"
+        data = {
+            'password': new_password,
+            'password_verification': new_password,
+        }
+        for k, v in data.items():
+            data[k] = ""
+            response = self.c.post(self.url, data)
+
+            self.assertEqual(response.status_code, 200)
+            self.assertFormError(response, 'form',
+                                 k,
+                                 "This field is required.")
+
+    def test_password_reset_password_invalid(self):
+        new_password = "NewBatmanPassword99"
+        data = {
+            'password': new_password,
+            'password_verification': "not_valid_1",
+        }
+        response = self.c.post(self.url, data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFormError(response, 'form',
+                             'password',
+                             "doesn't match the confirmation")
+
+    def test_password_reset_password_validation_invalid(self):
+        new_password = "WrongPass"
+        data = {
+            'password': new_password,
+            'password_verification': new_password,
+        }
+
+        response = self.c.post(self.url, data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFormError(response, 'form',
+                             "password",
                              "minimun 7 characters, one letter and one number")

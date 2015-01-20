@@ -125,6 +125,7 @@ PIPELINE_JS = {
     'calendall-js': {
         'source_filenames': (
             'js/semantic-actions.js',
+            'js/other-actions.js',
         ),
         'output_filename': 'js/calendall.min.js',
     }
@@ -146,6 +147,7 @@ AUTH_USER_MODEL = 'profiles.CalendallUser'
 LOGIN_URL = reverse_lazy("profiles:login")
 LOGOUT_URL = reverse_lazy("profiles:logout")
 LOGIN_REDIRECT_URL = reverse_lazy("profiles:login")
+PASSWORD_RESET_MAX_SECONDS = 24 * 60 * 60  # One day
 
 # ------------- Gravatar stuff -------------
 GRAVATAR_DEFAULT_IMAGE = "identicon"

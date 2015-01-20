@@ -13,40 +13,14 @@ from . import utils
 log = logging.getLogger(__name__)
 
 
-class CalendallUserCreateForm(forms.ModelForm):
-
-    class Meta:
-        model = CalendallUser
-        fields = ["email", "username", "password"]
+# Profile form mixins
+class NewPasswordMixin(object):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.fields['email'].required = True
         self.fields['password_verification'] = forms.CharField(
             label=_('Confirm your password'), max_length=128, required=True)
-
-    def clean_email(self):
-        email = self.cleaned_data['email']
-        if utils.email_exists(email):
-            log.debug("email '{0}' already taken".format(email))
-            raise forms.ValidationError(_("already taken"))
-
-        return email
-
-    def clean_username(self):
-        username = self.cleaned_data['username']
-
-        if not utils.valid_username(username):
-            log.debug("username '{0}' not ^.(?<!\-)[a-zA-Z0-9\-]{{1,29}}$".format(username))
-            raise forms.ValidationError(_("May only contain alphanumeric characters or dashes and cannot begin with a dash"))
-
-        # Check username exists
-        if utils.username_exists(username):
-            log.debug("username '{0}' already taken".format(username))
-            raise forms.ValidationError(_("already taken"))
-
-        return username
 
     def clean_password(self):
         password = self.cleaned_data['password']
@@ -79,6 +53,41 @@ class CalendallUserCreateForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
+
+# Forms
+class CalendallUserCreateForm(NewPasswordMixin, forms.ModelForm):
+
+    class Meta:
+        model = CalendallUser
+        fields = ["email", "username", "password"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['email'].required = True
+
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        if utils.email_exists(email):
+            log.debug("email '{0}' already taken".format(email))
+            raise forms.ValidationError(_("already taken"))
+
+        return email
+
+    def clean_username(self):
+        username = self.cleaned_data['username']
+
+        if not utils.valid_username(username):
+            log.debug("username '{0}' not ^.(?<!\-)[a-zA-Z0-9\-]{{1,29}}$".format(username))
+            raise forms.ValidationError(_("May only contain alphanumeric characters or dashes and cannot begin with a dash"))
+
+        # Check username exists
+        if utils.username_exists(username):
+            log.debug("username '{0}' already taken".format(username))
+            raise forms.ValidationError(_("already taken"))
+
+        return username
 
 
 class LoginForm(AuthenticationForm):
@@ -139,7 +148,7 @@ class ProfileSettingsForm(forms.ModelForm):
         self.fields['timezone'].help_text = _("Select timezone")
 
 
-class AccountSettingsForm(forms.ModelForm):
+class AccountSettingsForm(NewPasswordMixin, forms.ModelForm):
 
     class Meta:
         model = CalendallUser
@@ -148,15 +157,15 @@ class AccountSettingsForm(forms.ModelForm):
     def __init__(self, request, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.request = request
+        self.fields['old_password'] = forms.CharField(
+            label=_('Old password'), max_length=128, required=True)
         self.fields['password'].label = _("Old password")
         self.fields['password'].required = True
-        self.fields['new_password'] = forms.CharField(
-            label=_('New password'), max_length=128, required=True)
-        self.fields['new_password_verification'] = forms.CharField(
-            label=_('Confirm new password'), max_length=128, required=True)
+        self.fields['password_verification'].label = _('Confirm new password')
+        self.fields['password'].required = True
 
-    def clean_new_password(self):
-        password = self.cleaned_data.get('new_password', "")
+    def clean_old_password(self):
+        password = self.cleaned_data.get('old_password', "")
         if password and not utils.valid_password(password):
             msg = _("minimun 7 characters, one letter and one number")
             raise forms.ValidationError(msg)
@@ -164,33 +173,40 @@ class AccountSettingsForm(forms.ModelForm):
         return password
 
     def clean(self):
-        self.cleaned_data = super().clean()
-        password = self.cleaned_data.get('password', "")
+        old_password = self.cleaned_data.get('old_password', "")
 
-        if password:
-            if not self.request.user.check_password(password):
+        if old_password:
+            if not self.request.user.check_password(old_password):
                 msg = _("Old password isn't valid")
-                self.add_error('password', msg)
+                self.add_error('old_password', msg)
                 raise forms.ValidationError(msg)
 
-            new_password = self.cleaned_data.get('new_password', "")
-            new_password_verification = self.cleaned_data.get(
-                'new_password_verification', "")
-
-            if new_password and new_password_verification and new_password != new_password_verification:
-                log.debug("new password '{0}' and '{1}' differ".format(
-                    new_password, new_password_verification))
-
-                msg = _("doesn't match the confirmation")
-                self.add_error('new_password', msg)
-                self.add_error('new_password_verification', msg)
-                raise forms.ValidationError(msg)
+        self.cleaned_data = super().clean()
 
         return self.cleaned_data
 
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        user.set_password(self.cleaned_data["new_password"])
-        if commit:
-            user.save()
-        return user
+
+class AskPasswordResetForm(forms.ModelForm):
+
+    class Meta:
+        model = CalendallUser
+        fields = ["email"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['email'].required = True
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email', "")
+        if not utils.email_exists(email):
+            log.debug("error reseting password for: {0}".format(email))
+            raise forms.ValidationError(_("Can't find that email, sorry"))
+
+        return email
+
+
+class PasswordResetForm(NewPasswordMixin, forms.ModelForm):
+
+    class Meta:
+        model = CalendallUser
+        fields = ["password"]

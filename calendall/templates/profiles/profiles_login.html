@@ -42,7 +42,7 @@
 
                 <!-------------- password field ---------------------->
                 <div class="ui field input {% if form.password.errors %} error {% endif %}">
-                    <label>{{ form.password.label }} <a href="">({% trans "forgot password" %})</a></label>
+                    <label>{{ form.password.label }} <a href="{% url "profiles:ask_password_reset" %}">({% trans "forgot password" %})</a></label>
                     <input id="{{ form.password.auto_id }}"
                             name="{{ form.password.name }}"
                             type="password"
@@ -61,7 +61,6 @@
         </div>
         </div>
     </div>
-
 </div>
 
 {% endblock content %}
