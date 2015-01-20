@@ -253,15 +253,19 @@ class PasswordReset(UpdateView):
     validation_error_url = reverse_lazy("profiles:ask_password_reset")
 
     def dispatch(self, request, *args, **kwargs):
-        username = self.kwargs.get('username', "")
-        token = self.kwargs.get('token', "")
-        self.user = CalendallUser.objects.get(username=username)
-        # First check the token is ok
-        if token == self.user.reset_token and\
-           self.user.reset_expiration >= timezone.now():
-            return super().dispatch(request, *args, **kwargs)
+        try:
+            username = self.kwargs.get('username', "")
+            token = self.kwargs.get('token', "")
+            self.user = CalendallUser.objects.get(username=username)
+            # First check the token is ok
+            if token == self.user.reset_token and\
+               self.user.reset_expiration >= timezone.now():
+                return super().dispatch(request, *args, **kwargs)
 
-        log.debug("Error resettings password for: {0}".format(self.user.email))
+        except CalendallUser.DoesNotExist:
+            pass  # show error but not a clue about the user inexstence
+
+        log.debug("Error resettings password for: {0}".format(username))
         messages.error(self.request, _("It looks like you clicked on an invalid password reset link or it expired. Please try again."))
         return redirect(self.validation_error_url)
 

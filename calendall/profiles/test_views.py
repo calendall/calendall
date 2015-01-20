@@ -1,3 +1,4 @@
+from datetime import timedelta
 from unittest import mock
 import uuid
 
@@ -6,6 +7,7 @@ from django.core import mail
 from django.core.urlresolvers import reverse
 from django.test import Client, TestCase
 from django.test.utils import override_settings
+from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 import premailer
 
@@ -779,12 +781,12 @@ class TestAskPasswordReset(TestCase):
 class TestPasswordReset(TestCase):
 
     def setUp(self):
-
-        self.url = reverse("profiles:ask_password_reset")
         self.data = {
             'username': "batman",
             'email': "darkknight@gmail.com",
             'password': 'I\'mBatman123',
+            'reset_token': str(uuid.uuid4()).replace("-", ""),
+            'reset_expiration': timezone.now() + timedelta(seconds=10)
         }
 
         self.u = CalendallUser(**self.data)
@@ -793,23 +795,107 @@ class TestPasswordReset(TestCase):
 
         self.c = Client()
 
+        url_data = {
+            'username': self.u.username,
+            'token': self.u.reset_token
+        }
+        self.url = reverse("profiles:password_reset", kwargs=url_data)
+
     def test_password_reset_ok(self):
-        pass
+        new_password = "NewBatmanPassword99"
+        data = {
+            'password': new_password,
+            'password_verification': new_password,
+        }
+
+        response = self.c.post(self.url, data)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse("profiles:login"))
+
+        # self.u.refresh_from_db() # Wait to Dajngo 1.8
+        u = CalendallUser.objects.get(id=self.u.id)
+        self.assertTrue(u.check_password(new_password))
 
     def test_password_reset_wrong_by_token(self):
-        pass
+        url_data = {
+            'username': self.u.username,
+            'token': str(uuid.uuid4()).replace("-", "")
+        }
+        self.url = reverse("profiles:password_reset", kwargs=url_data)
+
+        response = self.c.post(self.url, {})
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse("profiles:ask_password_reset"))
 
     def test_password_reset_wrong_by_user(self):
-        pass
+        url_data = {
+            'username': "notBatman",
+            'token': self.u.reset_token
+        }
+        self.url = reverse("profiles:password_reset", kwargs=url_data)
+
+        response = self.c.post(self.url, {})
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse("profiles:ask_password_reset"))
 
     def test_password_reset_wrong_by_expire(self):
-        pass
+        expiration = timezone.now() - timedelta(seconds=1)
+        self.u.reset_expiration = expiration
+        self.u.save()
+
+        new_password = "NewBatmanPassword99"
+        data = {
+            'password': new_password,
+            'password_verification': new_password,
+        }
+
+        response = self.c.post(self.url, data)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse("profiles:ask_password_reset"))
 
     def test_password_reset_required_fields(self):
-        pass
+
+        new_password = "NewBatmanPassword99"
+        data = {
+            'password': new_password,
+            'password_verification': new_password,
+        }
+        for k, v in data.items():
+            data[k] = ""
+            response = self.c.post(self.url, data)
+
+            self.assertEqual(response.status_code, 200)
+            self.assertFormError(response, 'form',
+                                 k,
+                                 "This field is required.")
 
     def test_password_reset_password_invalid(self):
-        pass
+        new_password = "NewBatmanPassword99"
+        data = {
+            'password': new_password,
+            'password_verification': "not_valid_1",
+        }
+        response = self.c.post(self.url, data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFormError(response, 'form',
+                             'password',
+                             "doesn't match the confirmation")
 
     def test_password_reset_password_validation_invalid(self):
-        pass
+        new_password = "WrongPass"
+        data = {
+            'password': new_password,
+            'password_verification': new_password,
+        }
+
+        response = self.c.post(self.url, data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFormError(response, 'form',
+                             "password",
+                             "minimun 7 characters, one letter and one number")
