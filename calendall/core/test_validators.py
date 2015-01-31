@@ -5,7 +5,7 @@ from django.test import TestCase
 from django.core.exceptions import ValidationError
 import pytz
 
-from .validators import validate_timezone
+from .validators import validate_timezone, validate_color
 
 
 class TimezoneValidatorTestCase(TestCase):
@@ -46,3 +46,23 @@ class TimezoneValidatorTestCase(TestCase):
                 self.assertRaises(ValidationError,
                                   validate_timezone,
                                   str(uuid.uuid4()))
+
+
+class ColorValidatorTestCase(TestCase):
+
+    def setUp(self):
+        self.data = [
+            ("000000", True),
+            ("G01234", False),
+            ("123456", True),
+            ("F", False),
+            ("FFF", True),
+            ("FEFE", False),
+        ]
+
+    def test_predefined_data(self):
+        for i in self.data:
+            if i[1]:
+                validate_color(i[0])
+            else:
+                self.assertRaises(ValidationError, validate_color, (i[0]))
