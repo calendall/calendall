@@ -5,11 +5,13 @@ from django.conf.urls.static import static
 from django.views.generic import TemplateView
 
 from profiles import urls as profile_urls
+from calendars import urls as calendar_urls
 
 
 urlpatterns = patterns('',
     url(r'^$', TemplateView.as_view(template_name='base.html')),
     url(r'^p/', include(profile_urls, namespace="profiles")),
+    url(r'^c/', include(calendar_urls, namespace="calendars")),
     url(r'^admin/', include(admin.site.urls)),
 )
 
