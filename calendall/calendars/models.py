@@ -21,7 +21,7 @@ class Calendar(models.Model):
                                 validators=[validate_timezone])
 
     name = models.CharField(_("Calendar name"),
-                            max_length=32)
+                            max_length=100)
 
     description = models.TextField(_("Calendar description"),
                                    blank=True)

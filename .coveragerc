@@ -10,6 +10,7 @@ omit =
 source =
     core
     profiles
+    calendars
 
 [report]
 # Regexes for lines to exclude from consideration
