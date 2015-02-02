@@ -1,11 +1,12 @@
 from django.conf import settings
 from django.core import mail
+from django.core.management.color import no_style
+from django.db import models, connection
 from django.template.loader import render_to_string
 from django.test import TestCase
 from django.test.utils import override_settings
 from unittest import mock
 import premailer
-
 from .utils import send_templated_email
 from .mock_utils import local_url_loader
 
@@ -44,3 +45,36 @@ class TestEmailUtils(TestCase):
         self.assertEquals(mail.outbox[0].body, result_txt)
         self.assertEquals(mail.outbox[0].alternatives[0][0], result_html)
         self.assertEquals(data['receivers'][0], mail.outbox[0].recipients()[0])
+
+
+# custom model class to test the field
+# http://datahackermd.com/2013/testing-django-fields/
+class TestFieldModel(models.Model):
+
+    class Meta:
+        abstract = True
+
+    @classmethod
+    def create_table(cls):
+        # Cribbed from Django's management commands.
+        raw_sql, refs = connection.creation.sql_create_model(
+            cls, no_style(), [])
+        create_sql = u'\n'.join(raw_sql).encode('utf-8')
+        cls.delete_table()
+        cursor = connection.cursor()
+        try:
+            cursor.execute(create_sql)
+        finally:
+            cursor.close()
+
+    @classmethod
+    def delete_table(cls):
+        cursor = connection.cursor()
+        try:
+            cursor.execute('DROP TABLE IF EXISTS %s' % cls._meta.db_table)
+        except:
+            # Catch anything backend-specific here.
+            # (E.g., MySQLdb raises a warning if the table didn't exist.)
+            pass
+        finally:
+            cursor.close()
