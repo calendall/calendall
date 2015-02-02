@@ -1,11 +1,12 @@
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import python_2_unicode_compatible
 import pytz
 
 from profiles.models import CalendallUser
 from core.validators import validate_timezone, validate_color
-
+from core.fields.dates import AutoDateTimeField
 
 TIMEZONES = [(tz, tz) for tz in pytz.common_timezones]
 
@@ -37,13 +38,32 @@ class Calendar(models.Model):
         return self.name
 
 
-#@python_2_unicode_compatible
-#class Event(models.Model):
-#
-#    calendar = models.ForeignKey(Calendar)
-#    # rule
-#
-#
+@python_2_unicode_compatible
+class Event(models.Model):
+
+    calendar = models.ForeignKey(Calendar)
+    start = models.DateTimeField(_("Event start date"))
+    end = models.DateTimeField(_("Event start date"))
+    full_day = models.BooleanField(_("Event uses full day notation"),
+                                   default=False),
+    created = models.DateTimeField(_("Event start date"),
+                                   default=timezone.now)
+    modified = AutoDateTimeField(_("Event last modified date"),
+                                 default=timezone.now)
+
+    uid = models.CharField(_("Event uuid"),
+                           max_length=100)
+    summary = models.CharField(_("Event summary"),
+                               max_length=100)
+    description = models.TextField(_("Event description"),
+                                   blank=True)
+    sequence = models.IntegerField(_("Event version"),
+                                   default=0)
+    location = models.CharField(_("Event location"),
+                                max_length=200)
+    # rule
+
+
 #@python_2_unicode_compatible
 #class Rule(models.Model):
 #
